@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>POP_UP_BOTTOM_W.png</file>
+        <file>POP_UP_TOP_R.png</file>
+        <file>mainType2.qml</file>
+    </qresource>
+</RCC>
