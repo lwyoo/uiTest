@@ -5,7 +5,7 @@ import QtQuick.Window 2.2
 Window {
     visible: true
     width: 640
-    height: 480
+    height: 720
     title: qsTr("Hello World")
     property real imageWidth: 1022
     property real popupDuration: 1000
@@ -16,6 +16,38 @@ Window {
         console.log("value : " , popupState)
         testItem.state = popupState
         testItem2.state = popupState
+        testBG.state = popupState
+    }
+    Rectangle{
+        id: testBG
+        x: 1022/2
+        width: 0
+        height: 720
+        color: "yellow"
+
+        states: [
+            State {
+                name: "show"
+                PropertyChanges {
+                    target: testBG
+                    width: 1022
+                    x:0
+                }
+            },
+            State {
+                name: "hide"
+                PropertyChanges {
+                    target: testBG
+                    width: 0
+                }
+            }
+        ]
+        Behavior on width {
+            NumberAnimation { duration: popupDuration }
+        }
+        Behavior on x {
+            NumberAnimation { duration: popupDuration }
+        }
     }
 
 
