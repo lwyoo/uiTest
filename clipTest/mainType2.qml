@@ -8,15 +8,18 @@ Window {
     height: 720
     title: qsTr("Hello World")
     property real imageWidth: 1022
-    property real popupDuration: 1000
+    property real popupDuration: 200
 
     property string popupState: "hide"
+    property real middleShowY: 516
+    property real fullShowY: 516 + 138
 
     onPopupStateChanged: {
         console.log("value : " , popupState)
+
         testItem.state = popupState
-        testItem2.state = popupState
         testBG.state = popupState
+        testItem2.state = popupState
     }
 
     ////////////////////////////////////
@@ -43,6 +46,22 @@ Window {
                 PropertyChanges {
                     target: testBG
                     width: 0
+                }
+            },
+            State {
+                name: "middleShow"
+                PropertyChanges {
+                    target: testBG
+                    width: 1022
+                    x:0
+                }
+            },
+            State {
+                name: "middleHide"
+                PropertyChanges {
+                    target: testBG
+                    width: 1022
+                    x:0
                 }
             }
         ]
@@ -85,7 +104,32 @@ Window {
                     width: 0
                     x: imageWidth/2
                 }
+            },
+            State {
+                name: "middleShow"
+                PropertyChanges {
+                    target: testImageBottom
+                    y: middleShowY
+                }
+                PropertyChanges {
+                    target: testItem
+                    width: imageWidth/2
+                    x: 0
+                }
+            },
+            State {
+                name: "middleHide"
+                PropertyChanges {
+                    target: testItem
+                    width: imageWidth/2
+                    x: 0
+                }
+                PropertyChanges {
+                    target: testImageBottom
+                    y: fullShowY
+                }
             }
+
         ]
 
         Image {
@@ -97,6 +141,9 @@ Window {
             id: testImageBottom
             y:652
             source: "POP_UP_BOTTOM_W.png"
+            Behavior on y {
+                NumberAnimation { duration: popupDuration }
+            }
         }
 
         Behavior on width {
@@ -155,6 +202,44 @@ Window {
                     width: 0
 
                 }
+            },
+            State {
+                name: "middleShow"
+                PropertyChanges {
+                    target: testItem2
+                    width: imageWidth/2
+                }
+                PropertyChanges {
+                    target: testImage2
+                    x: -imageWidth/2
+                }
+                PropertyChanges {
+                    target: testImageTop2
+                    x: -imageWidth/2
+                }
+                PropertyChanges {
+                    target: testImage2
+                    y: middleShowY
+                }
+            },
+            State {
+                name: "middleHide"
+                PropertyChanges {
+                    target: testItem2
+                    width: imageWidth/2
+                }
+                PropertyChanges {
+                    target: testImage2
+                    x: -imageWidth/2
+                }
+                PropertyChanges {
+                    target: testImageTop2
+                    x: -imageWidth/2
+                }
+                PropertyChanges {
+                    target: testImage2
+                    y: fullShowY
+                }
             }
         ]
         Image {
@@ -164,6 +249,7 @@ Window {
             Behavior on x {
                 NumberAnimation { duration: popupDuration }
             }
+
         }
 
         Image {
@@ -172,6 +258,9 @@ Window {
             y:652
             source: "POP_UP_BOTTOM_W.png"
             Behavior on x {
+                NumberAnimation { duration: popupDuration }
+            }
+            Behavior on y {
                 NumberAnimation { duration: popupDuration }
             }
         }
@@ -201,6 +290,25 @@ Window {
                 } else {
                     popupState = "show"
                 }
+            }
+        }
+    }
+
+    Rectangle{
+        x: 400
+        y: 500
+        width: 100
+        height: 100
+        color: "blue"
+        MouseArea{
+            anchors.fill: parent
+            onClicked: {
+                if (popupState === "show" || popupState === "middleHide") {
+                    popupState = "middleShow"
+                } else {
+                    popupState = "middleHide"
+                }
+
             }
         }
     }
