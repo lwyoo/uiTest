@@ -17,6 +17,17 @@ QSharedPointer<MyQuickItem> MyQuickItem::instance(QQuickItem *parent)
     return gMyQuickItemIstance;
 }
 
+void MyQuickItem::destroyTest()
+{
+    mItem->setEnabled(false);
+    this->deleteLater();
+}
+
+MyQuickItem::~MyQuickItem()
+{
+    qDebug() << "~MyQuickItem()" ;
+}
+
 #ifdef DCP
 MyQuickItem::MyQuickItem(QQuickItem *parent)
     :QQuickItem(parent)

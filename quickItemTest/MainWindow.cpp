@@ -32,6 +32,11 @@ void MainWindow::findChiledItem(const QString objectName)
 
 }
 
+void MainWindow::destroyTest()
+{
+       MyQuickItem::instance()->destroyTest();
+}
+
 MainWindow::MainWindow(QQuickView *parent)
     :QQuickView(parent)
 {

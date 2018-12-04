@@ -11,6 +11,7 @@ class MainWindow : public QQuickView
 public:
     static QSharedPointer<MainWindow> instance(QQuickView *parent=Q_NULLPTR);
     void findChiledItem(const QString objectName);
+    void destroyTest();
 private:
     explicit MainWindow(QQuickView *parent = nullptr );
 

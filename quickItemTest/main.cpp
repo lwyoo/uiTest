@@ -16,5 +16,11 @@ int main(int argc, char *argv[])
     MainWindow::instance();
     MainWindow::instance()->show();
 
+    MainWindow::instance()->findChiledItem("dldyddn");
+    MainWindow::instance()->destroyTest();
+
+    MainWindow::instance()->findChiledItem("dldyddn");
+
+
     return app.exec();
 }

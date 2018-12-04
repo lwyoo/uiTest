@@ -7,6 +7,8 @@ class MyQuickItem : public QQuickItem
     Q_OBJECT
 public:
     static QSharedPointer<MyQuickItem> instance(QQuickItem *parent=Q_NULLPTR);
+    void destroyTest();
+    ~MyQuickItem();
 
 
 
