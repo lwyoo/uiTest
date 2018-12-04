@@ -1,5 +1,7 @@
 #include "MainWindow.h"
 #include "MyQuickItem.h"
+
+
 #define SCREEN_INFO_X 0
 #define SCREEN_INFO_Y 0
 #define SCREEN_INFO_WIDTH 1920
@@ -32,9 +34,15 @@ void MainWindow::findChiledItem(const QString objectName)
 
 }
 
-void MainWindow::destroyTest()
+void MainWindow::destroyTest(const QString objName)
 {
-       MyQuickItem::instance()->destroyTest();
+    MyQuickItem::instance()->destroyTest(objName);
+}
+
+bool MainWindow::createComponent(const QString objectName, const qreal posX, const qreal posY)
+{
+    bool res = MyQuickItem::instance()->createComponent(objectName, posX, posY);
+    return res;
 }
 
 MainWindow::MainWindow(QQuickView *parent)
@@ -46,6 +54,14 @@ MainWindow::MainWindow(QQuickView *parent)
     this->setMinimumSize(QSize(SCREEN_INFO_WIDTH, SCREEN_INFO_HEIGHT));
     this->setMaximumSize(QSize(SCREEN_INFO_WIDTH, SCREEN_INFO_HEIGHT));
 
-    MyQuickItem::instance();
+    MyQuickItem::instance()->findView();
+    MyQuickItem::instance()->settingQmlEngine();
 
+    connect(this, SIGNAL(testSignal(QString, qreal, qreal)), this, SLOT(testSlot(QString, qreal, qreal)));
+
+}
+
+void MainWindow::testSlot(QString ob, qreal posX, qreal posY)
+{
+    createComponent(ob, posX, posY) ;
 }

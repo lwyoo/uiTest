@@ -1,10 +1,7 @@
 #include "MyQuickItem.h"
-#include <QGuiApplication>
-#include <QQuickView>
-#include <QDebug>
-#include <QQmlIncubator>
-//#define ACTIVITY
-#define DCP
+
+#define ACTIVITY
+//#define DCP
 static QSharedPointer<MyQuickItem> gMyQuickItemIstance;
 
 QSharedPointer<MyQuickItem> MyQuickItem::instance(QQuickItem *parent)
@@ -17,68 +14,69 @@ QSharedPointer<MyQuickItem> MyQuickItem::instance(QQuickItem *parent)
     return gMyQuickItemIstance;
 }
 
-void MyQuickItem::destroyTest()
+void MyQuickItem::destroyTest(const QString objectName)
 {
-    mItem->setEnabled(false);
-    this->deleteLater();
+    if (false == mTest.contains(objectName)) {
+        qDebug() << "not find QQuickItem";
+    } else {
+        qDebug() << "remove data";
+       QQuickItem* rmItem =  mTest[objectName];
+       mTest.remove(objectName);
+
+       rmItem->setEnabled(false);
+       rmItem->deleteLater();
+    }
 }
 
 MyQuickItem::~MyQuickItem()
 {
-    qDebug() << "~MyQuickItem()" ;
+    qDebug() << "~MyQuickItem()";
 }
 
-#ifdef DCP
-MyQuickItem::MyQuickItem(QQuickItem *parent)
-    :QQuickItem(parent)
-    , mItem(nullptr)
-{
-    QWindowList windowList = qApp->allWindows();
-    qDebug() << "windowList count : " << windowList.count();
-
-    if (windowList.count() > 0 ) {
-        const QQuickView* view = qobject_cast<QQuickView*>(windowList.at(0));
-        QQmlEngine* engine = view->engine();
-        //        QQmlComponent component(engine, QUrl("qrc:/main.qml"));
-
-        QQmlComponent component(engine, QUrl("main.qml"));
-        mItem = qobject_cast<QQuickItem *>(component.create());
-
-        if(mItem ) {
-            mItem->setParent(this);
-            //this->setParent(view->contentItem()->parent());
-            mItem->setParentItem(this);
-            this->setParentItem(view->contentItem());
-            this->setWidth(mItem->width());
-            this->setHeight(mItem->height());
-
-            this->setEnabled(true);
-
-            mItem->setZ(10);
-            qDebug() << "Component setting is sucess [OK]";
-        } else {
-            qDebug() << "Component is nullptr [ERROR]";
-        }
-
-    } else {
-        qDebug() << "window size is 0 [ERROR]";
-    }
-}
-
-#endif
-
-#ifdef ACTIVITY
-MyQuickItem::MyQuickItem(QQuickItem *parent)
-    :QQuickItem(parent)
-    , mItem(nullptr)
+bool MyQuickItem::findView()
 {
     QWindowList windowlist = qApp->allWindows();
     qDebug() << Q_FUNC_INFO << "window list count: " << windowlist.count();
-    if (windowlist.count()) {
-        QQuickView* view = qobject_cast<QQuickView*>(windowlist.at(0));
-        QQmlEngine* engine = view->engine();
+    bool res = false ;
+    if (windowlist.count() > 0) {
+        mView = qobject_cast<QQuickView*>(windowlist.at(0));
+        res = true;
+    } else {
+        qDebug() << Q_FUNC_INFO << "window list count: " << windowlist.count() << "InValied Data [ERROR]";
+    }
+    return res;
+
+}
+
+bool MyQuickItem::settingQmlEngine()
+{
+    QWindowList windowlist = qApp->allWindows();
+    qDebug() << Q_FUNC_INFO << "window list count: " << windowlist.count();
+    bool res = false ;
+
+    if (Q_NULLPTR ==  mView) {
+        qDebug() << Q_FUNC_INFO << "View is InValied [ERROR]";
+    } else {
+        mEngine = mView->engine();
+
+        if (Q_NULLPTR ==  mEngine) {
+            qDebug() << Q_FUNC_INFO << "engine is InValied [ERROR]";
+        } else {
+            res = true;
+        }
+    }
+
+    return res;
+}
+
+bool MyQuickItem::createComponent(const QString objectName)
+{
+    bool res = false;
+    if (Q_NULLPTR ==  mEngine || Q_NULLPTR == mView ) {
+        qDebug() << Q_FUNC_INFO << "engine is InValied [ERROR]";
+    } else {
         QQmlIncubator incubator;
-        QQmlComponent component(engine, QUrl("main.qml"));
+        QQmlComponent component(mEngine, QUrl("main.qml"));
         component.create(incubator);
 
         if (!incubator.isReady()) {
@@ -88,22 +86,107 @@ MyQuickItem::MyQuickItem(QQuickItem *parent)
 
         QQuickItem *item = qobject_cast<QQuickItem *>(incubator.object());
         if (item) {
+            item->setObjectName(objectName);
             this->setWidth(item->width());
             this->setHeight(item->height());
             item->setParent(this);
-            this->setParent(view->contentItem());
+            this->setParent(mView->contentItem());
             item->setParentItem(this);
-            this->setParentItem(view->contentItem());
+            this->setParentItem(mView->contentItem());
+
 
             this->setEnabled(false);
 
-            mItem = item;
+            if (false == mTest.contains(objectName)) {
+            } else {
+                qDebug() << "data update ";
+            }
+            mTest[objectName] = item;
+            res = true;
+
             qDebug() << "Component setting is sucess [OK]";
         } else {
             qDebug() << "Component is nullptr [ERROR]";
         }
+    }
+
+    qDebug() << "QQuickItem Map size is : " <<  mTest.size();
+
+
+
+
+    return res;
+}
+
+bool MyQuickItem::createComponent(const QString objectName, const qreal posX, const qreal posY)
+{
+    bool res = false;
+    if (Q_NULLPTR ==  mEngine || Q_NULLPTR == mView ) {
+        qDebug() << Q_FUNC_INFO << "engine is InValied [ERROR]";
     } else {
-        qDebug() << "window size is 0 [ERROR]";
+        QQmlIncubator incubator;
+        QQmlComponent component(mEngine, QUrl("main.qml"));
+        component.create(incubator);
+
+        if (!incubator.isReady()) {
+            qDebug() << "incubator.isReady() is not ready [ERROR]";
+            incubator.forceCompletion();
+        }
+
+        QQuickItem *item = qobject_cast<QQuickItem *>(incubator.object());
+        if (item) {
+            item->setX(posX);
+            item->setY(posY);
+            item->setObjectName(objectName);
+            this->setWidth(item->width());
+            this->setHeight(item->height());
+            item->setParent(this);
+            this->setParent(mView->contentItem());
+            item->setParentItem(this);
+            this->setParentItem(mView->contentItem());
+
+            this->setEnabled(false);
+
+            if (false == mTest.contains(objectName)) {
+            } else {
+                qDebug() << "data update ";
+            }
+            mTest[objectName] = item;
+
+            qDebug() << "Component setting is sucess [OK]";
+        } else {
+            qDebug() << "Component is nullptr [ERROR]";
+        }
+    }
+    return res;
+}
+
+bool MyQuickItem::removeComponent(const QString objectName)
+{
+    bool res = false;
+    if (false == mTest.contains(objectName)) {
+
+    } else {
+
+    }
+
+    return res;
+}
+
+MyQuickItem::MyQuickItem(QQuickItem *parent)
+    :QQuickItem(parent)
+    , mItem(Q_NULLPTR)
+    , mEngine(Q_NULLPTR)
+{
+
+}
+
+void MyQuickItem::printMapData()
+{
+
+    QMap<QString, QQuickItem*>::const_iterator i =  mTest.constBegin();
+    while (i != mTest.constEnd()) {
+        qDebug() << "key: " << i.key();
+        ++i;
     }
 }
-#endif

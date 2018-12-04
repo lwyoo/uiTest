@@ -11,9 +11,18 @@ class MainWindow : public QQuickView
 public:
     static QSharedPointer<MainWindow> instance(QQuickView *parent=Q_NULLPTR);
     void findChiledItem(const QString objectName);
-    void destroyTest();
+    void destroyTest(const QString objName);
+    bool createComponent(const QString objectName, const qreal posX, const qreal posY);
+
 private:
     explicit MainWindow(QQuickView *parent = nullptr );
+
+// test code
+signals:
+    void testSignal(QString, qreal, qreal);
+
+public slots:
+    void testSlot(QString ob, qreal posX, qreal posY);
 
 
 };
