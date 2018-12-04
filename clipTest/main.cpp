@@ -12,6 +12,8 @@ int main(int argc, char *argv[])
 //    engine.load(QUrl(QStringLiteral("qrc:/mainType2.qml")));
 //    engine.load(QUrl(QStringLiteral("mainType2.qml")));
     engine.load(QUrl("./mainType2.qml"));
+//    engine.load(QUrl("main.qml"));
+
     if (engine.rootObjects().isEmpty())
         return -1;
 

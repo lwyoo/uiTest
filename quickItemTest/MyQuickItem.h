@@ -8,6 +8,9 @@ class MyQuickItem : public QQuickItem
 public:
     static QSharedPointer<MyQuickItem> instance(QQuickItem *parent=Q_NULLPTR);
 
+
+
+
 private:
     explicit MyQuickItem(QQuickItem *parent=Q_NULLPTR);
 
