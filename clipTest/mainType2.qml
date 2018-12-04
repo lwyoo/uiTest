@@ -13,6 +13,7 @@ Window {
     property string popupState: "hide"
     property real middleShowY: 516
     property real fullShowY: 516 + 138
+    property bool enableAnimation: true
 
     onPopupStateChanged: {
         console.log("value : " , popupState)
@@ -66,10 +67,10 @@ Window {
             }
         ]
         Behavior on width {
-            NumberAnimation { duration: popupDuration }
+            NumberAnimation { duration: enableAnimation? popupDuration : 0 }
         }
         Behavior on x {
-            NumberAnimation { duration: popupDuration }
+            NumberAnimation { duration: enableAnimation? popupDuration : 0 }
         }
     }
 
@@ -142,28 +143,15 @@ Window {
             y:652
             source: "POP_UP_BOTTOM_W.png"
             Behavior on y {
-                NumberAnimation { duration: popupDuration }
+                NumberAnimation { duration: enableAnimation? popupDuration : 0 }
             }
         }
 
         Behavior on width {
-            NumberAnimation { duration: popupDuration }
+            NumberAnimation { duration: enableAnimation? popupDuration : 0 }
         }
         Behavior on x {
-            NumberAnimation { duration: popupDuration }
-        }
-    }
-
-    Text {
-        id: testText
-        text: qsTr("text")
-        color: "black"
-        font.pixelSize : 100
-        opacity: 0
-
-
-        Behavior on opacity {
-            NumberAnimation { duration: popupDuration }
+            NumberAnimation { duration: enableAnimation? popupDuration : 0 }
         }
     }
 
@@ -247,7 +235,7 @@ Window {
             x: -imageWidth
             source: "POP_UP_TOP_R.png"
             Behavior on x {
-                NumberAnimation { duration: popupDuration }
+                NumberAnimation { duration: enableAnimation? popupDuration : 0 }
             }
 
         }
@@ -258,18 +246,33 @@ Window {
             y:652
             source: "POP_UP_BOTTOM_W.png"
             Behavior on x {
-                NumberAnimation { duration: popupDuration }
+                NumberAnimation { duration: enableAnimation? popupDuration : 0 }
             }
             Behavior on y {
-                NumberAnimation { duration: popupDuration }
+                NumberAnimation { duration: enableAnimation? popupDuration : 0 }
             }
         }
 
         Behavior on width {
-            NumberAnimation { duration: popupDuration }
+            NumberAnimation { duration: enableAnimation? popupDuration : 0 }
         }
         Behavior on x {
-            NumberAnimation { duration: popupDuration }
+            NumberAnimation { duration: enableAnimation? popupDuration : 0 }
+        }
+    }
+
+    ////////////////////////////////////
+    ////           data area        ////
+    ////////////////////////////////////
+    Text {
+        id: testText
+        text: qsTr("text")
+        color: "black"
+        font.pixelSize : 100
+        opacity: 0
+
+        Behavior on opacity {
+            NumberAnimation { duration: enableAnimation? popupDuration : 0 }
         }
     }
 

@@ -13,9 +13,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+    main.cpp
 
-RESOURCES += qml.qrc
+#RESOURCES += qml.qrc
+DISTFILES += \
+    main.qml \
+    mainType2.qml \
+    POP_UP_BOTTOM_W.png \
+    POP_UP_TOP_R.png \
+
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

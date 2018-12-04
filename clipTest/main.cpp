@@ -9,7 +9,9 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 //    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    engine.load(QUrl(QStringLiteral("qrc:/mainType2.qml")));
+//    engine.load(QUrl(QStringLiteral("qrc:/mainType2.qml")));
+//    engine.load(QUrl(QStringLiteral("mainType2.qml")));
+    engine.load(QUrl("./mainType2.qml"));
     if (engine.rootObjects().isEmpty())
         return -1;
 

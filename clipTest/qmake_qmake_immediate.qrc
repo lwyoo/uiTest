@@ -1,0 +1,5 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+<file alias="mainType2.qml">/home/ooo/git/uiTest/clipTest/mainType2.qml</file>
+</qresource>
+</RCC>
