@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
     MainWindow::instance();
     MainWindow::instance()->show();
 
+    MainWindow::instance()->checkoutChiledItem("dldytddn1");
+
 
 
 

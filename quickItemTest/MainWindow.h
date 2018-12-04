@@ -10,6 +10,12 @@ class MainWindow : public QQuickView
 
 public:
     static QSharedPointer<MainWindow> instance(QQuickView *parent=Q_NULLPTR);
+
+    void checkoutChiledItem(const QString objName);
+
+
+
+
 private:
     explicit MainWindow(QQuickView *parent = nullptr );
 

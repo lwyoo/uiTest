@@ -3,6 +3,8 @@
 #include <QQuickView>
 #include <QDebug>
 #include <QQmlIncubator>
+//#define ACTIVITY
+#define DCP
 static QSharedPointer<MyQuickItem> gMyQuickItemIstance;
 
 QSharedPointer<MyQuickItem> MyQuickItem::instance(QQuickItem *parent)
@@ -54,6 +56,7 @@ MyQuickItem::MyQuickItem(QQuickItem *parent)
 
 #endif
 
+#ifdef ACTIVITY
 MyQuickItem::MyQuickItem(QQuickItem *parent)
     :QQuickItem(parent)
     , mItem(nullptr)
@@ -92,3 +95,4 @@ MyQuickItem::MyQuickItem(QQuickItem *parent)
         qDebug() << "window size is 0 [ERROR]";
     }
 }
+#endif

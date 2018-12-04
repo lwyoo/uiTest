@@ -17,6 +17,20 @@ QSharedPointer<MainWindow> MainWindow::instance(QQuickView *parent)
     return gMainWindowIstance;
 }
 
+void MainWindow::checkoutChiledItem(const QString objName)
+{
+    // test
+    qDebug() << "input objectName : " << objName;
+    QQuickItem* temp;
+    temp = this->findChild<QQuickItem*>("dldyddn");
+
+    if (temp) {
+        qDebug() << "chiled is InValied [ERROR]";
+    } else {
+        qDebug() << "chiled is Valied [OK]";
+    }
+}
+
 MainWindow::MainWindow(QQuickView *parent)
     :QQuickView(parent)
 {
