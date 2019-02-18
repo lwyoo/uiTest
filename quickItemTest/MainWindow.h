@@ -14,6 +14,9 @@ public:
     void destroyTest(const QString objName);
     bool createComponent(const QString objectName, const qreal posX, const qreal posY);
 
+    Q_INVOKABLE void upOpacity();
+    Q_INVOKABLE void downOpacity();
+
 private:
     explicit MainWindow(QQuickView *parent = nullptr );
 

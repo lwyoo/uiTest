@@ -11,11 +11,20 @@ Window {
     property real imageWidth: 1022
     property real popupDuration: 1000
 
+    property string testIndex: "1"
+
     onPopupStateChanged: {
         console.log("value : " , popupState)
         testItem.state = popupState
     }
 
+    Image {
+        source: "POP_UP_TOP_W.png"
+    }
+    Image {
+        source: "POP_UP_BOTTOM_W.png"
+        y:652
+    }
     Item{
         id:testItem
         width: 0
@@ -73,7 +82,7 @@ Window {
 
         Image {
             id: testImage
-            source: "POP_UP_BOTTOM_W.png"
+            source: "POP_UP_BOTTOM_R.png"
             x: -imageWidth/2
             y:652
             Behavior on x {
@@ -105,5 +114,6 @@ Window {
             }
         }
     }
+
 }
 

@@ -21,6 +21,30 @@ DISTFILES += \
     mainType2.qml \
     POP_UP_BOTTOM_W.png \
     POP_UP_TOP_R.png \
+    POP_UP_BOTTOM_R.png \
+    POP_UP_BOTTOM_W.png \
+    POP_UP_TOP_R.png \
+    POP_UP_TOP_W.png \
+    POP_UP_BOTTOM_R.png \
+    POP_UP_BOTTOM_W.png \
+    POP_UP_MIDDLE_BG.png \
+    POP_UP_TOP_R.png \
+    POP_UP_TOP_W.png \
+    SCC_IMG_LANE_BG.png \
+    SCC_IMG_SCC_CAR_CD_01.png \
+    SCC_IMG_SCC_CAR_CD_02.png \
+    SCC_IMG_SCC_CAR_CD_03.png \
+    SCC_IMG_SCC_CAR_CD_04.png \
+    SCC_IMG_SCC_CAR_HM_01.png \
+    SCC_IMG_SCC_CAR_HM_02.png \
+    SCC_IMG_SCC_CAR_HM_03.png \
+    SCC_IMG_SCC_CAR_HM_04.png \
+    LDWS_IMG_LANE_LEFT_GRAY.png \
+    LDWS_IMG_LANE_LEFT_WHITE.png \
+    LDWS_IMG_LANE_LEFT_YELLOW.png \
+    LDWS_IMG_LANE_RIGHT_GRAY.png \
+    LDWS_IMG_LANE_RIGHT_WHITE.png \
+    LDWS_IMG_LANE_RIGHT_YELLOW.png
 
 
 # Additional import path used to resolve QML modules in Qt Creator's code model

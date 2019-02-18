@@ -26,6 +26,9 @@ public:
 
     void printMapData();
 
+    void upOpacity();
+    void downOpacity();
+
 private:
     explicit MyQuickItem(QQuickItem *parent=Q_NULLPTR);
 
@@ -34,6 +37,9 @@ private:
     QQmlEngine* mEngine;
     QQuickView* mView;
     QMap<ObjectName, QQuickItem*> mTest;
+
+public slots:
+    void cppSlot(QString temp);
 
 };
 

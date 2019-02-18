@@ -4,7 +4,7 @@ import QtQuick.Window 2.2
 
 Window {
     visible: true
-    width: 640
+    width: 1920
     height: 720
     title: qsTr("Hello World")
     property real imageWidth: 1022
@@ -14,6 +14,9 @@ Window {
     property real middleShowY: 516
     property real fullShowY: 516 + 138
     property bool enableAnimation: true
+    property string testIndex: "1"
+
+    property real imageOp: 0.7
 
     onPopupStateChanged: {
         console.log("value : " , popupState)
@@ -72,6 +75,13 @@ Window {
         Behavior on x {
             NumberAnimation { duration: enableAnimation? popupDuration : 0 }
         }
+    }
+
+    Image {
+        x: 0
+        y:652
+        source: "POP_UP_BOTTOM_W.png"
+        opacity: imageOp
     }
 
     ////////////////////////////////////
@@ -136,12 +146,14 @@ Window {
         Image {
             id: testImageTop
             source: "POP_UP_TOP_R.png"
+            opacity: imageOp
         }
 
         Image {
             id: testImageBottom
             y:652
             source: "POP_UP_BOTTOM_W.png"
+            opacity: imageOp
             Behavior on y {
                 NumberAnimation { duration: enableAnimation? popupDuration : 0 }
             }
@@ -234,6 +246,7 @@ Window {
             id: testImageTop2
             x: -imageWidth
             source: "POP_UP_TOP_R.png"
+            opacity: imageOp
             Behavior on x {
                 NumberAnimation { duration: enableAnimation? popupDuration : 0 }
             }
@@ -245,6 +258,7 @@ Window {
             x: -imageWidth
             y:652
             source: "POP_UP_BOTTOM_W.png"
+            opacity: imageOp
             Behavior on x {
                 NumberAnimation { duration: enableAnimation? popupDuration : 0 }
             }
@@ -315,5 +329,19 @@ Window {
             }
         }
     }
-}
+    Image{
+        y:652
+        x: -39
+        source: "POP_UP_MIDDLE_BG.png"
+        opacity: imageOp
+        MouseArea{
+            anchors.fill: parent
+            onClicked: {
+                parent.x = parent.x +1
+                console.log("image x : " , parent.x)
+            }
+        }
+    }
 
+
+}

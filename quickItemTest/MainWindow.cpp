@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 #include "MyQuickItem.h"
-
+#include <QQmlContext>
 
 #define SCREEN_INFO_X 0
 #define SCREEN_INFO_Y 0
@@ -45,6 +45,16 @@ bool MainWindow::createComponent(const QString objectName, const qreal posX, con
     return res;
 }
 
+void MainWindow::upOpacity()
+{
+    MyQuickItem::instance()->upOpacity();
+}
+
+void MainWindow::downOpacity()
+{
+    MyQuickItem::instance()->downOpacity();
+}
+
 MainWindow::MainWindow(QQuickView *parent)
     :QQuickView(parent)
 {
@@ -56,6 +66,10 @@ MainWindow::MainWindow(QQuickView *parent)
 
     MyQuickItem::instance()->findView();
     MyQuickItem::instance()->settingQmlEngine();
+
+
+    rootContext()->setContextProperty(QString("MainWindow"),this);
+//    rootContext()->set
 
     connect(this, SIGNAL(testSignal(QString, qreal, qreal)), this, SLOT(testSlot(QString, qreal, qreal)));
 

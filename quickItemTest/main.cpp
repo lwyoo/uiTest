@@ -17,65 +17,70 @@ int main(int argc, char *argv[])
     MainWindow::instance()->show();
 
     // standard in/out , use terminor
-    thread t1 = thread([&] {
-        while(1)
-        {
-            int value;
-            cout << endl;
-            cout << endl;
-            cout << endl;
-            cout << endl;
+//    thread t1 = thread([&] {
+//        while(1)
+//        {
+//            int value;
+//            cout << endl;
+//            cout << endl;
+//            cout << endl;
+//            cout << endl;
 
-            cout << "1. create Component " << endl;
-            //            cout << "2. object list " << endl;
-            //            cout << "3. findeChiled" << endl;
-            cout << "4. destroy item" << endl;
-
-
-            cin >> value;
+//            cout << "1. create Component " << endl;
+//            //            cout << "2. object list " << endl;
+//            //            cout << "3. findeChiled" << endl;
+//            cout << "4. destroy item" << endl;
 
 
-            switch (value) {
-            case 1: {
-                string objectName = "";
-                cout << "input ObjectName : " << endl;
-                cin >> objectName;
-                QString qObjectName = QString::fromUtf8(objectName.c_str());
+//            cin >> value;
 
-                int posX;
-                qreal qPosX;
-                cout << "input position X  : " << endl;
-                cin >> posX;
-                qPosX = static_cast<qreal>(posX);
 
-                int posY;
-                qreal qPosY;
-                cout << "input position Y  : " << endl;
-                cin >> posY;
-                qPosY = static_cast<qreal>(posY);
-                MainWindow::instance()->testSignal(qObjectName, qPosX, qPosY);
-            }
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4: {
+//            switch (value) {
+//            case 1: {
+//                string objectName = "";
+//                cout << "input ObjectName : " << endl;
+//                cin >> objectName;
+//                QString qObjectName = QString::fromUtf8(objectName.c_str());
 
-                string objectName = "";
-                cout << "input ObjectName : " << endl;
-                cin >> objectName;
-                QString qObjectName = QString::fromUtf8(objectName.c_str());
-                MainWindow::instance()->destroyTest(qObjectName);
-            }
-                break;
-            default:
-                break;
+//                int posX;
+//                qreal qPosX;
+//                cout << "input position X  : " << endl;
+//                cin >> posX;
+//                qPosX = static_cast<qreal>(posX);
 
-            }
+//                int posY;
+//                qreal qPosY;
+//                cout << "input position Y  : " << endl;
+//                cin >> posY;
+//                qPosY = static_cast<qreal>(posY);
+////                MainWindow::instance()->createComponent(qObjectName, qPosX, qPosY);
+//                MainWindow::instance()->testSignal(qObjectName, qPosX, qPosY);
+//            }
+//                break;
+//            case 2:
+//                break;
+//            case 3:
+//                break;
+//            case 4: {
 
-        }
-    });
+//                string objectName = "";
+//                cout << "input ObjectName : " << endl;
+//                cin >> objectName;
+//                QString qObjectName = QString::fromUtf8(objectName.c_str());
+//                MainWindow::instance()->destroyTest(qObjectName);
+//            }
+//                break;
+//            case 99:
+//                break;
+//            default:
+//                break;
+
+//            }
+
+//        }
+//    });
+    MainWindow::instance()->createComponent("aa", 0, 50);
+//    MainWindow::instance()->createComponent("qObjectName");
 
 
 

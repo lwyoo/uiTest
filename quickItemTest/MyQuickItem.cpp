@@ -96,6 +96,8 @@ bool MyQuickItem::createComponent(const QString objectName)
 
 
             this->setEnabled(false);
+            QObject::connect(item, SIGNAL(qmlSignal(QString)),
+                             this, SLOT(cppSlot(QString)));
 
             if (false == mTest.contains(objectName)) {
             } else {
@@ -120,6 +122,7 @@ bool MyQuickItem::createComponent(const QString objectName)
 
 bool MyQuickItem::createComponent(const QString objectName, const qreal posX, const qreal posY)
 {
+    qDebug() << Q_FUNC_INFO << "objectName : " <<objectName ;
     bool res = false;
     if (Q_NULLPTR ==  mEngine || Q_NULLPTR == mView ) {
         qDebug() << Q_FUNC_INFO << "engine is InValied [ERROR]";
@@ -128,12 +131,14 @@ bool MyQuickItem::createComponent(const QString objectName, const qreal posX, co
         QQmlComponent component(mEngine, QUrl("main.qml"));
         component.create(incubator);
 
+
         if (!incubator.isReady()) {
             qDebug() << "incubator.isReady() is not ready [ERROR]";
             incubator.forceCompletion();
         }
 
         QQuickItem *item = qobject_cast<QQuickItem *>(incubator.object());
+
         if (item) {
             item->setX(posX);
             item->setY(posY);
@@ -145,7 +150,10 @@ bool MyQuickItem::createComponent(const QString objectName, const qreal posX, co
             item->setParentItem(this);
             this->setParentItem(mView->contentItem());
 
-            this->setEnabled(false);
+            this->setEnabled(true);
+//            this->setVisible(false);
+            QObject::connect(item, SIGNAL(qmlSignal(QString)),
+                             this, SLOT(cppSlot(QString)));
 
             if (false == mTest.contains(objectName)) {
             } else {
@@ -165,11 +173,16 @@ bool MyQuickItem::removeComponent(const QString objectName)
 {
     bool res = false;
     if (false == mTest.contains(objectName)) {
-
+        qDebug() << "not find QQuickItem";
     } else {
+        qDebug() << "remove data";
+       QQuickItem* rmItem =  mTest[objectName];
+       mTest.remove(objectName);
 
+       rmItem->setEnabled(false);
+       rmItem->deleteLater();
+       res = true;
     }
-
     return res;
 }
 
@@ -181,6 +194,11 @@ MyQuickItem::MyQuickItem(QQuickItem *parent)
 
 }
 
+void MyQuickItem::cppSlot(QString temp)
+{
+       qDebug() << "text : !!" <<temp;
+}
+
 void MyQuickItem::printMapData()
 {
 
@@ -189,4 +207,31 @@ void MyQuickItem::printMapData()
         qDebug() << "key: " << i.key();
         ++i;
     }
+}
+
+void MyQuickItem::upOpacity()
+{
+    if (mTest.end() !=  mTest.find(QString("aa"))) {
+        qDebug() << "valied Map";
+        if (Q_NULLPTR == mTest[QString("aa")]->findChild<QQuickItem*>(QString("aa"))) {
+
+            qDebug() << "valied Map xxxxxxxxxxxxxx2 : " <<mTest[QString("aa")]->childItems().size();
+            qDebug() << "valied Map xxxxxxxxxxxxxx2 : " <<mTest[QString("aa")]->childItems().at(0)->objectName();
+            qDebug() << "valied Map xxxxxxxxxxxxxx2 : " <<mTest[QString("aa")]->childItems().at(1)->objectName();
+            qDebug() << "valied Map xxxxxxxxxxxxxx2 : " <<mTest[QString("aa")]->childItems().at(2)->objectName();
+            mTest[QString("aa")]->setProperty("myOpacity",0);
+        } else {
+            qDebug() << "valied Map oooooooooooooo2 ";
+            mTest[QString("aa")]->findChild<QQuickItem*>(QString("aa"))->setProperty("myOpacity",0);
+        }
+
+    } else {
+        qDebug() << "valied Map xx";
+    }
+}
+
+void MyQuickItem::downOpacity()
+{
+        qDebug() << "upOpacity :: valied data !!" ;
+        mTest[QString("aa")]->setProperty("myOpacity",1);
 }
