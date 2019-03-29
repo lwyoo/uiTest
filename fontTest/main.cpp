@@ -6,6 +6,7 @@
 #include <QLoggingCategory>
 #include <QFile>
 #include <QFontDatabase>
+#include <iostream>
 int main(int argc, char *argv[])
 {
 
@@ -26,8 +27,14 @@ int main(int argc, char *argv[])
 //        std::cout << "current() : " << QDir::currentPath().toStdString().c_str() << std::endl;
 //    }
 
+
+    QDir::setCurrent(QCoreApplication::applicationDirPath());
     QString fontFiles;
-    fontFiles = "/home/ooo/fontTest/Cube.ttf";
+    fontFiles = QCoreApplication::applicationDirPath().append("/Font/Cube.ttf");
+
+    std::cout << "fontFiles : " << fontFiles.toStdString().c_str() <<  std::endl;
+
+
     QFile fontFile(fontFiles);
 
     if( true == fontFile.open(QIODevice::ReadOnly) )
@@ -43,7 +50,9 @@ int main(int argc, char *argv[])
 
 
     QString fontFiles2;
-    fontFiles2 = "/home/ooo/fontTest/CubeBa1.ttf";
+    fontFiles2 = QCoreApplication::applicationDirPath().append("/Font/CubeBa1.ttf");
+
+    std::cout << "fontFiles2 : " << fontFiles2.toStdString().c_str() <<  std::endl;
     QFile fontFile2(fontFiles2);
 
     if( true == fontFile2.open(QIODevice::ReadOnly) )
