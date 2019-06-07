@@ -233,5 +233,7 @@ void MyQuickItem::upOpacity()
 void MyQuickItem::downOpacity()
 {
         qDebug() << "upOpacity :: valied data !!" ;
-        mTest[QString("aa")]->setProperty("myOpacity",1);
+//        mTest[QString("aa")]->setProperty("myOpacity",1);
+        removeComponent("aa");
+
 }

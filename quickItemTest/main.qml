@@ -39,11 +39,18 @@ Item {
         height: 100
 
         color: "blue"
+
+        Text {
+            id: text1
+            text: "function start!!!!!!"
+        }
+
         MouseArea{
             anchors.fill: parent
             onClicked: {
-                console.log("@@@@@@@@ upOpacity")
-                MainWindow.upOpacity()
+                console.log("function start!!!!")
+//                MainWindow.upOpacity()
+                testWhile()
             }
         }
 
@@ -59,6 +66,16 @@ Item {
             onClicked: {
                 console.log("@@@@@@@@ downOpacity")
                 MainWindow.downOpacity()
+            }
+        }
+    }
+
+
+    function testWhile() {
+        for (var i = 0; i < 100; i++) {
+            for (var j = 0; j < 1000; j++) {
+                console.count()
+
             }
         }
     }
