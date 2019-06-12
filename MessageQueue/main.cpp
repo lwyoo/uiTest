@@ -3,7 +3,7 @@
 
 #include <unistd.h>
 #include <iostream>
-#include "MainWindow.h"
+#include "PopupController.h"
 
 #include <thread>
 using namespace std;
@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    MainWindow::instance()->show();
+    PopupController::instance()->show();
 
     // standard in/out , use terminor
     thread t1 = thread([&] {
@@ -27,12 +27,13 @@ int main(int argc, char *argv[])
             cout << endl;
 
             cout << "1. create Component " << endl;
-            //            cout << "2. object list " << endl;
-            //            cout << "3. findeChiled" << endl;
+            cout << "2. 자동으로 사각형 만들기  " << endl;
+            cout << "3. 다른 쓰레드에서 이미지 생성 요청 하기   " << endl;
             cout << "4. destroy item" << endl;
 
 
             cin >> value;
+
 
 
             switch (value) {
@@ -53,13 +54,14 @@ int main(int argc, char *argv[])
                 cout << "input position Y  : " << endl;
                 cin >> posY;
                 qPosY = static_cast<qreal>(posY);
-                MainWindow::instance()->testSignal(qObjectName, qPosX, qPosY);
+                PopupController::instance()->createComponent(qObjectName, qPosX, qPosY);
             }
                 break;
             case 2:
-                MainWindow::instance()->createComponent("aa", 0, 50);
+                PopupController::instance()->requestCreateComponent("aa", 0, 50);
                 break;
             case 3:
+                PopupController::instance()->createComponent("aa", 0, 50);
                 break;
             case 4: {
 
@@ -67,7 +69,7 @@ int main(int argc, char *argv[])
                 cout << "input ObjectName : " << endl;
                 cin >> objectName;
                 QString qObjectName = QString::fromUtf8(objectName.c_str());
-                MainWindow::instance()->destroyTest(qObjectName);
+                PopupController::instance()->destroyTest(qObjectName);
             }
                 break;
             default:

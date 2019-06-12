@@ -10,13 +10,13 @@
 
 #include <QMap>
 using ObjectName = QString;
-class MyQuickItem : public QQuickItem
+class PopupManager : public QQuickItem
 {
     Q_OBJECT
 public:
-    static QSharedPointer<MyQuickItem> instance(QQuickItem *parent=Q_NULLPTR);
+    static QSharedPointer<PopupManager> instance(QQuickItem *parent=Q_NULLPTR);
     void destroyTest(const QString objectName);
-    ~MyQuickItem();
+    ~PopupManager();
 
     bool findView();
     bool settingQmlEngine();
@@ -26,8 +26,18 @@ public:
 
     void printMapData();
 
+    void connectionSignal();
+
+    bool requestCreateComponent(const QString objectName, const qreal posX, const qreal posY);
+
 private:
-    explicit MyQuickItem(QQuickItem *parent=Q_NULLPTR);
+    explicit PopupManager(QQuickItem *parent=Q_NULLPTR);
+
+signals:
+    void signalCreateComponent(const QString objectName, const qreal posX, const qreal posY);
+
+public slots:
+    void slotCreateComponent(const QString objectName, const qreal posX, const qreal posY);
 
 private:
     QQuickItem* mItem;

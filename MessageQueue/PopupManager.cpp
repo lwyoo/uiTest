@@ -1,20 +1,20 @@
-#include "MyQuickItem.h"
+#include "PopupManager.h"
 
 #define ACTIVITY
 //#define DCP
-static QSharedPointer<MyQuickItem> gMyQuickItemIstance;
+static QSharedPointer<PopupManager> gMyQuickItemIstance;
 
-QSharedPointer<MyQuickItem> MyQuickItem::instance(QQuickItem *parent)
+QSharedPointer<PopupManager> PopupManager::instance(QQuickItem *parent)
 {
     if(gMyQuickItemIstance.isNull())
     {
-        gMyQuickItemIstance = QSharedPointer<MyQuickItem>(new MyQuickItem(parent));
+        gMyQuickItemIstance = QSharedPointer<PopupManager>(new PopupManager(parent));
     }
 
     return gMyQuickItemIstance;
 }
 
-void MyQuickItem::destroyTest(const QString objectName)
+void PopupManager::destroyTest(const QString objectName)
 {
     if (false == mTest.contains(objectName)) {
         qDebug() << "not find QQuickItem";
@@ -28,12 +28,12 @@ void MyQuickItem::destroyTest(const QString objectName)
     }
 }
 
-MyQuickItem::~MyQuickItem()
+PopupManager::~PopupManager()
 {
     qDebug() << "~MyQuickItem()";
 }
 
-bool MyQuickItem::findView()
+bool PopupManager::findView()
 {
     QWindowList windowlist = qApp->allWindows();
     qDebug() << Q_FUNC_INFO << "window list count: " << windowlist.count();
@@ -48,7 +48,7 @@ bool MyQuickItem::findView()
 
 }
 
-bool MyQuickItem::settingQmlEngine()
+bool PopupManager::settingQmlEngine()
 {
     QWindowList windowlist = qApp->allWindows();
     qDebug() << Q_FUNC_INFO << "window list count: " << windowlist.count();
@@ -69,7 +69,7 @@ bool MyQuickItem::settingQmlEngine()
     return res;
 }
 
-bool MyQuickItem::createComponent(const QString objectName)
+bool PopupManager::createComponent(const QString objectName)
 {
     bool res = false;
     if (Q_NULLPTR ==  mEngine || Q_NULLPTR == mView ) {
@@ -118,8 +118,9 @@ bool MyQuickItem::createComponent(const QString objectName)
     return res;
 }
 
-bool MyQuickItem::createComponent(const QString objectName, const qreal posX, const qreal posY)
+bool PopupManager::createComponent(const QString objectName, const qreal posX, const qreal posY)
 {
+    qDebug() << Q_FUNC_INFO ;
     bool res = false;
     if (Q_NULLPTR ==  mEngine || Q_NULLPTR == mView ) {
         qDebug() << Q_FUNC_INFO << "engine is InValied [ERROR]";
@@ -161,7 +162,7 @@ bool MyQuickItem::createComponent(const QString objectName, const qreal posX, co
     return res;
 }
 
-bool MyQuickItem::removeComponent(const QString objectName)
+bool PopupManager::removeComponent(const QString objectName)
 {
     bool res = false;
     if (false == mTest.contains(objectName)) {
@@ -173,15 +174,15 @@ bool MyQuickItem::removeComponent(const QString objectName)
     return res;
 }
 
-MyQuickItem::MyQuickItem(QQuickItem *parent)
+PopupManager::PopupManager(QQuickItem *parent)
     :QQuickItem(parent)
     , mItem(Q_NULLPTR)
     , mEngine(Q_NULLPTR)
 {
-
+    connectionSignal();
 }
 
-void MyQuickItem::printMapData()
+void PopupManager::printMapData()
 {
 
     QMap<QString, QQuickItem*>::const_iterator i =  mTest.constBegin();
@@ -189,4 +190,21 @@ void MyQuickItem::printMapData()
         qDebug() << "key: " << i.key();
         ++i;
     }
+}
+
+void PopupManager::connectionSignal()
+{
+    connect(this, SIGNAL(signalCreateComponent(const QString , const qreal , const qreal )), SLOT(slotCreateComponent(const QString , const qreal , const qreal )) );
+}
+
+bool PopupManager::requestCreateComponent(const QString objectName, const qreal posX, const qreal posY)
+{
+    emit signalCreateComponent(objectName, posX, posY);
+}
+
+void PopupManager::slotCreateComponent(const QString objectName, const qreal posX, const qreal posY)
+{
+    qDebug() << Q_FUNC_INFO <<"objectName : " << objectName << " posX : " << posX << " posY : " << posY ;
+
+    createComponent(objectName, posX, posY );
 }
