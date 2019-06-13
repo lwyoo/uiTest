@@ -18,7 +18,9 @@ SOURCES += \
         main.cpp
 
 #RESOURCES += qml.qrc
-DISTFILES +=  main.qml
+DISTFILES +=  main.qml \
+    MyRec1.qml \
+    MyRec2.qml
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

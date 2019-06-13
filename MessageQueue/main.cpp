@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <iostream>
 #include "PopupController.h"
-
+#include "PopupManager.h"
 #include <thread>
 using namespace std;
 
@@ -54,14 +54,17 @@ int main(int argc, char *argv[])
                 cout << "input position Y  : " << endl;
                 cin >> posY;
                 qPosY = static_cast<qreal>(posY);
-                PopupController::instance()->createComponent(qObjectName, qPosX, qPosY);
+                PopupController::instance()->requestCreateComponent(qObjectName, qPosX, qPosY);
+                //                PopupController::instance()->createComponent(qObjectName, qPosX, qPosY);
             }
                 break;
             case 2:
                 PopupController::instance()->requestCreateComponent("aa", 0, 50);
                 break;
             case 3:
-                PopupController::instance()->createComponent("aa", 0, 50);
+                //                PopupController::instance()->createComponent("aa", 0, 50);
+                for(int i = 0 ; i < 10001; i++)
+                    PopupController::instance()->updateQml();
                 break;
             case 4: {
 
@@ -80,6 +83,8 @@ int main(int argc, char *argv[])
         }
     });
 
+    //    PopupController::instance()->requestCreateComponent("aa", 0, 50);
+    //    PopupManager::instance()->slotUpdateQml();
 
     return app.exec();
 }

@@ -20,11 +20,11 @@ void PopupManager::destroyTest(const QString objectName)
         qDebug() << "not find QQuickItem";
     } else {
         qDebug() << "remove data";
-       QQuickItem* rmItem =  mTest[objectName];
-       mTest.remove(objectName);
+        QQuickItem* rmItem =  mTest[objectName];
+        mTest.remove(objectName);
 
-       rmItem->setEnabled(false);
-       rmItem->deleteLater();
+        rmItem->setEnabled(false);
+        rmItem->deleteLater();
     }
 }
 
@@ -105,6 +105,9 @@ bool PopupManager::createComponent(const QString objectName)
             res = true;
 
             qDebug() << "Component setting is sucess [OK]";
+
+
+
         } else {
             qDebug() << "Component is nullptr [ERROR]";
         }
@@ -120,14 +123,20 @@ bool PopupManager::createComponent(const QString objectName)
 
 bool PopupManager::createComponent(const QString objectName, const qreal posX, const qreal posY)
 {
-    qDebug() << Q_FUNC_INFO ;
+    qDebug() << Q_FUNC_INFO << "start<<<<<<<<<<<<<<<<<<--------";
     bool res = false;
     if (Q_NULLPTR ==  mEngine || Q_NULLPTR == mView ) {
         qDebug() << Q_FUNC_INFO << "engine is InValied [ERROR]";
     } else {
+
         QQmlIncubator incubator;
         QQmlComponent component(mEngine, QUrl("main.qml"));
         component.create(incubator);
+
+        //        QObject::connect(item, SIGNAL(animationFinish(int)), this, SLOT(SlotMiniPopupAnimationFinish(int)));
+        QObject::connect(&component, SIGNAL(statusChanged(QQmlComponent::Status)),   SLOT(slotstatusChanged(QQmlComponent::Status)));
+        QObject::connect(&component, SIGNAL(progressChanged(qreal)),                 SLOT(slotprogressChanged(qreal)             ));
+
 
         if (!incubator.isReady()) {
             qDebug() << "incubator.isReady() is not ready [ERROR]";
@@ -148,6 +157,15 @@ bool PopupManager::createComponent(const QString objectName, const qreal posX, c
 
             this->setEnabled(false);
 
+
+            if (item->property("myQml").isValid())             {
+                qDebug() << "data update OOOOOOOOOOOOO";
+                item->setProperty("myQml", QUrl("MyRec1.qml"));
+            } else {
+                qDebug() << "data update XXXXXXXXXXXXXx";
+            }
+
+
             if (false == mTest.contains(objectName)) {
             } else {
                 qDebug() << "data update ";
@@ -159,6 +177,7 @@ bool PopupManager::createComponent(const QString objectName, const qreal posX, c
             qDebug() << "Component is nullptr [ERROR]";
         }
     }
+    qDebug() << Q_FUNC_INFO << "end ------__>>>>>>>>>>>>>>>>";
     return res;
 }
 
@@ -180,6 +199,8 @@ PopupManager::PopupManager(QQuickItem *parent)
     , mEngine(Q_NULLPTR)
 {
     connectionSignal();
+    findView();
+    settingQmlEngine();
 }
 
 void PopupManager::printMapData()
@@ -195,6 +216,38 @@ void PopupManager::printMapData()
 void PopupManager::connectionSignal()
 {
     connect(this, SIGNAL(signalCreateComponent(const QString , const qreal , const qreal )), SLOT(slotCreateComponent(const QString , const qreal , const qreal )) );
+    connect(this, SIGNAL(signalCreateComponent()), SLOT(slotCreateComponent()) );
+
+    connect(this, SIGNAL(stateChanged(const QString &)          ), SLOT( slotstateChanged(const QString &)               ))   ;
+    connect(this, SIGNAL(focusChanged(bool)                     ), SLOT( slotfocusChanged(bool)                          ))   ;
+    connect(this, SIGNAL(activeFocusChanged(bool)               ), SLOT( slotactiveFocusChanged(bool)                    ))   ;
+    connect(this, SIGNAL(activeFocusOnTabChanged(bool)          ), SLOT( slotactiveFocusOnTabChanged(bool)               ))   ;
+    connect(this, SIGNAL(transformOriginChanged(TransformOrigin)), SLOT( slottransformOriginChanged(TransformOrigin)     ))   ;
+    connect(this, SIGNAL(smoothChanged(bool)                    ), SLOT( slotsmoothChanged(bool)                        ))    ;
+    connect(this, SIGNAL(antialiasingChanged(bool)              ), SLOT( slotantialiasingChanged(bool)                   ))   ;
+    connect(this, SIGNAL(clipChanged(bool)                      ), SLOT( slotclipChanged(bool)                           ))   ;
+    connect(this, SIGNAL(childrenChanged()                      ), SLOT( slotchildrenChanged()                           ))   ;
+    connect(this, SIGNAL(opacityChanged()                       ), SLOT( slotopacityChanged()                            ))   ;
+    connect(this, SIGNAL(enabledChanged()                       ), SLOT( slotenabledChanged()                            ))   ;
+    connect(this, SIGNAL(visibleChanged()                       ), SLOT( slotvisibleChanged()                            ))   ;
+    connect(this, SIGNAL(visibleChildrenChanged()               ), SLOT( slotvisibleChildrenChanged()                    ))   ;
+    connect(this, SIGNAL(rotationChanged()                      ), SLOT( slotrotationChanged()                           ))   ;
+    connect(this, SIGNAL(scaleChanged()                         ), SLOT( slotscaleChanged()                              ))   ;
+    connect(this, SIGNAL(xChanged()                             ), SLOT( slotxChanged()                                  ))   ;
+    connect(this, SIGNAL(yChanged()                             ), SLOT( slotyChanged()                                  ))   ;
+    connect(this, SIGNAL(widthChanged()                         ), SLOT( slotwidthChanged()                              ))   ;
+    connect(this, SIGNAL(heightChanged()                        ), SLOT( slotheightChanged()                             ))   ;
+    connect(this, SIGNAL(zChanged()                             ), SLOT( slotzChanged()                                  ))   ;
+    connect(this, SIGNAL(implicitWidthChanged()                 ), SLOT( slotimplicitWidthChanged()                      ))   ;
+    connect(this, SIGNAL(implicitHeightChanged()                ), SLOT( slotimplicitHeightChanged()                     ))   ;
+    connect(this, SIGNAL(containmentMaskChanged()               ), SLOT( slotcontainmentMaskChanged()                    ))   ;
+
+
+    connect(this, SIGNAL(signalUpdateQml()               ), SLOT( slotUpdateQml()                    ))   ;
+
+
+
+
 }
 
 bool PopupManager::requestCreateComponent(const QString objectName, const qreal posX, const qreal posY)
@@ -202,9 +255,163 @@ bool PopupManager::requestCreateComponent(const QString objectName, const qreal 
     emit signalCreateComponent(objectName, posX, posY);
 }
 
+void PopupManager::updateQml()
+{
+    emit signalUpdateQml();
+}
+
 void PopupManager::slotCreateComponent(const QString objectName, const qreal posX, const qreal posY)
 {
     qDebug() << Q_FUNC_INFO <<"objectName : " << objectName << " posX : " << posX << " posY : " << posY ;
 
     createComponent(objectName, posX, posY );
+}
+
+void PopupManager::slotstateChanged(const QString &value)
+{
+    qDebug() << Q_FUNC_INFO << value ;
+}
+
+void PopupManager::slotfocusChanged(bool value )
+{
+    qDebug() << Q_FUNC_INFO << value ;
+}
+
+void PopupManager::slotactiveFocusChanged(bool value )
+{
+    qDebug() << Q_FUNC_INFO << value ;
+}
+
+void PopupManager::slotactiveFocusOnTabChanged(bool value )
+{
+    qDebug() << Q_FUNC_INFO << value ;
+}
+
+void PopupManager::slottransformOriginChanged(QQuickItem::TransformOrigin value)
+{
+    qDebug() << Q_FUNC_INFO << value ;
+}
+
+void PopupManager::slotsmoothChanged(bool value)
+{
+    qDebug() << Q_FUNC_INFO << value ;
+}
+
+void PopupManager::slotantialiasingChanged(bool value)
+{
+    qDebug() << Q_FUNC_INFO << value ;
+}
+
+void PopupManager::slotclipChanged(bool value)
+{
+    qDebug() << Q_FUNC_INFO << value ;
+}
+
+void PopupManager::slotchildrenChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotopacityChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotenabledChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotvisibleChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotvisibleChildrenChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotrotationChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotscaleChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotxChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotyChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotwidthChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotheightChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotzChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotimplicitWidthChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotimplicitHeightChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotcontainmentMaskChanged()
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void PopupManager::slotstatusChanged(QQmlComponent::Status value )
+{
+    qDebug() << Q_FUNC_INFO << value ;
+}
+
+void PopupManager::slotprogressChanged(qreal value )
+{
+    qDebug() << Q_FUNC_INFO << value ;
+}
+
+void PopupManager::slotUpdateQml()
+{
+    qDebug() << Q_FUNC_INFO ;
+    QQuickItem* temp = mTest["aa"];
+
+    if (temp->property("myQml").isValid())
+    {
+        if (temp->property("myQml").toString().compare("MyRec1.qml") == 0) {
+            temp->setProperty("myQml", QUrl("MyRec2.qml"));
+        } else {
+            temp->setProperty("myQml", QUrl("MyRec1.qml"));
+        }
+    }
+    qDebug() << Q_FUNC_INFO << "endl";
+
+
+}
+
+bool PopupManager::event(QEvent *event)
+{
+    qDebug() << Q_FUNC_INFO << "Event Type ["<< static_cast<int>(event->type())  <<"]";
+    QObject::event(event);
 }

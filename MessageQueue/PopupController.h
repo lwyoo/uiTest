@@ -19,6 +19,9 @@ public:
     void createComponent(const QString objectName, const qreal posX, const qreal posY);
     void requestCreateComponent(const QString objectName, const qreal posX, const qreal posY);
 
+
+    void updateQml();
+
 private:
     explicit PopupController(QQuickView *parent = nullptr );
 
@@ -33,6 +36,17 @@ private:
 
 public slots:
     void testSlot(QString ob, qreal posX, qreal posY);
+    void testSceneGraphInitialized();
+    void testsceneGraphInvalidated ()  ;
+    void testbeforeSynchronizing   ()  ;
+    void testafterSynchronizing    ()  ;
+    void testbeforeRendering       ()  ;
+    void testafterRendering        ()  ;
+    void testafterAnimating        ()  ;
+    void testsceneGraphAboutToStop ()  ;
+    void testactiveFocusItemChanged()  ;
+
+
 
 
 };
