@@ -4,6 +4,7 @@
 #include <QQuickItem>
 #include <QQuickView>
 
+#include "MessageThread.h"
 class PopupController : public QQuickView
 {
     Q_OBJECT
@@ -13,14 +14,18 @@ public:
     void findChiledItem(const QString objectName);
     void destroyTest(const QString objName);
 
-//    bool requestCreateComponent(const QString objectName, const qreal posX, const qreal posY);
-
-
     void createComponent(const QString objectName, const qreal posX, const qreal posY);
     void requestCreateComponent(const QString objectName, const qreal posX, const qreal posY);
 
 
     void updateQml();
+
+
+    ~PopupController();
+
+
+
+
 
 private:
     explicit PopupController(QQuickView *parent = nullptr );
@@ -47,7 +52,23 @@ public slots:
     void testactiveFocusItemChanged()  ;
 
 
+    //Message Test
+public:
+    void initMessageThread();
+    void makeMessage();
 
+    void startMessageThread();
+    void resumeMessageThread();
+    void stopMessageThread();
+
+    int dispatch(void* msg);
+    QString getState();
+
+
+
+private:
+    MessageThread* m_msgThread;
+    int mIndex = 0;
 
 };
 

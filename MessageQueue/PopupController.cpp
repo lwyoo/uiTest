@@ -1,6 +1,8 @@
 #include "PopupController.h"
 #include "PopupManager.h"
 
+#include <functional>
+
 
 #define SCREEN_INFO_X 0
 #define SCREEN_INFO_Y 0
@@ -8,6 +10,12 @@
 #define SCREEN_INFO_HEIGHT 720
 
 static QSharedPointer<PopupController> gMainWindowIstance;
+
+struct PopupItemItem {
+    QString popupType;
+    QString requestType;
+    QString data;
+};
 
 QSharedPointer<PopupController> PopupController::instance(QQuickView *parent)
 {
@@ -61,7 +69,88 @@ void PopupController::requestCreateComponent(const QString objectName, const qre
 
 void PopupController::updateQml()
 {
+
+
     PopupManager::instance()->updateQml();
+}
+
+int PopupController::dispatch(void *msg)
+{
+    qDebug() << Q_FUNC_INFO;
+
+    PopupItemItem* temp = (PopupItemItem*)msg;
+
+    qDebug() << "temp->popupType :" << temp->popupType;
+    qDebug() << "temp->requestType :" << temp->requestType;
+    qDebug() << "temp->data :" << temp->data;
+
+}
+
+QString PopupController::getState()
+{
+    MessageThreadState value = m_msgThread->getState();
+    QString temp;
+    switch (value) {
+        case MessageThreadState::UNINITED  : temp = "UNINITED,  " ;break;
+        case MessageThreadState::INITED    : temp = "INITED,    " ;break;
+        case MessageThreadState::STARTED   : temp = "STARTED,   " ;break;
+        case MessageThreadState::RUNNING   : temp = "RUNNING,   " ;break;
+        case MessageThreadState::STOPPED   : temp = "STOPPED,   " ;break;
+        case MessageThreadState::SUSPEND   : temp = "SUSPEND,   " ;break;
+        case MessageThreadState::TERMINATED: temp = "TERMINATED," ;break;
+        case MessageThreadState::MAX       : temp = "MAX        " ;break;
+
+    }
+    return temp;
+}
+
+void PopupController::initMessageThread()
+{
+    qDebug() << Q_FUNC_INFO;
+
+    std::function<int(void *)> handler = [this](void *msg)->int {
+        return this->dispatch(msg);
+    };
+
+    m_msgThread = new MessageThread(handler, "PopupController");
+}
+
+void PopupController::makeMessage()
+{
+    qDebug() << Q_FUNC_INFO;
+    PopupItemItem* temp = new PopupItemItem;
+
+    QString myStr = "this is sparta~~~~~~~~ ";
+    myStr.append(QString::number(mIndex));
+    temp->popupType = "FULL";
+    temp->requestType = "create";
+    temp->data = myStr;
+
+    m_msgThread->putMessage(temp);
+}
+
+void PopupController::startMessageThread()
+{
+    qDebug() << Q_FUNC_INFO;
+    m_msgThread->start();
+}
+
+void PopupController::resumeMessageThread()
+{
+    qDebug() << Q_FUNC_INFO;
+    m_msgThread->resume();
+}
+
+void PopupController::stopMessageThread()
+{
+    qDebug() << Q_FUNC_INFO;
+    m_msgThread->stop();
+}
+
+PopupController::~PopupController()
+{
+    m_msgThread->exit();
+    delete m_msgThread;
 }
 
 PopupController::PopupController(QQuickView *parent)
@@ -79,15 +168,15 @@ PopupController::PopupController(QQuickView *parent)
 
     connect(this, SIGNAL(testSignal(QString, qreal, qreal)), this, SLOT(testSlot(QString, qreal, qreal)));
 
-    connect(this, SIGNAL(sceneGraphInitialized()), this, SLOT(testSceneGraphInitialized()));
-    connect(this, SIGNAL(sceneGraphInvalidated()), this, SLOT(  testsceneGraphInvalidated()));
-    connect(this, SIGNAL(beforeSynchronizing   ()), this, SLOT(  testbeforeSynchronizing   ()));
-    connect(this, SIGNAL(afterSynchronizing    ()), this, SLOT(  testafterSynchronizing    ()));
-    connect(this, SIGNAL(beforeRendering       ()), this, SLOT(  testbeforeRendering       ()));
-    connect(this, SIGNAL(afterRendering        ()), this, SLOT(  testafterRendering        ()));
-    connect(this, SIGNAL(afterAnimating        ()), this, SLOT(  testafterAnimating        ()));
-    connect(this, SIGNAL(sceneGraphAboutToStop ()), this, SLOT(  testsceneGraphAboutToStop ()));
-    connect(this, SIGNAL(activeFocusItemChanged()), this, SLOT(  testactiveFocusItemChanged()));
+//    connect(this, SIGNAL(sceneGraphInitialized()), this, SLOT(testSceneGraphInitialized()));
+//    connect(this, SIGNAL(sceneGraphInvalidated()), this, SLOT(  testsceneGraphInvalidated()));
+//    connect(this, SIGNAL(beforeSynchronizing   ()), this, SLOT(  testbeforeSynchronizing   ()));
+//    connect(this, SIGNAL(afterSynchronizing    ()), this, SLOT(  testafterSynchronizing    ()));
+//    connect(this, SIGNAL(beforeRendering       ()), this, SLOT(  testbeforeRendering       ()));
+//    connect(this, SIGNAL(afterRendering        ()), this, SLOT(  testafterRendering        ()));
+//    connect(this, SIGNAL(afterAnimating        ()), this, SLOT(  testafterAnimating        ()));
+//    connect(this, SIGNAL(sceneGraphAboutToStop ()), this, SLOT(  testsceneGraphAboutToStop ()));
+//    connect(this, SIGNAL(activeFocusItemChanged()), this, SLOT(  testactiveFocusItemChanged()));
 
 
 
@@ -108,8 +197,6 @@ PopupController::PopupController(QQuickView *parent)
 //    void colorChanged(const QColor &);
 //    Q_REVISION(1) void activeFocusItemChanged();
 //    Q_REVISION(2) void sceneGraphError(QQuickWindow::SceneGraphError error, const QString &message);
-
-
 
 }
 
