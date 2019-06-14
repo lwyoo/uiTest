@@ -9,6 +9,7 @@
 
 #include <functional>
 
+#define MESSAGE_TEST 0
 using namespace std;
 
 
@@ -104,6 +105,11 @@ int main(int argc, char *argv[])
 
 //        }
 //    });
+
+
+
+#if MESSAGE_TEST
+    //message Test
     thread t1 = thread([&] {
         while(1)
         {
@@ -157,9 +163,74 @@ int main(int argc, char *argv[])
 
         }
     });
-
+#endif
     //    PopupController::instance()->requestCreateComponent("aa", 0, 50);
     //    PopupManager::instance()->slotUpdateQml();
+
+
+    PopupController::instance()->initMessageThread();
+
+    PopupController::instance()->startMessageThread();
+
+    PopupController::instance()->requestCreateComponent("aa", 0, 50);
+
+
+        thread t1 = thread([&] {
+            while(1)
+            {
+                int value;
+                cout << endl;
+                cout << endl;
+                cout << endl;
+                cout << endl;
+
+
+                cout << "1. MessageQueue 미적용 버전" <<endl;
+                cout << "2. MessageQueue 적용 버전 " <<endl;
+                cout << "3. Index 초기화          " <<endl;
+                cout << "4. Current State        " <<endl;
+
+
+                cin >> value;
+
+
+
+                switch (value) {
+
+                case 1: {
+
+                    for(int i = 0 ; i < 10000000; i++) {
+                        PopupController::instance()->putMessage("aa", 0, 50, i);
+                    }
+
+
+                    }
+                    break;
+                case 2: {
+                    for(int i = 0 ; i < 100000; i++)
+                        PopupManager::instance()->updateCount(i);
+
+                    }
+                    break;
+                case 3: {
+
+                    PopupController::instance()->putMessage("aa", 0, 50, 0);
+
+                    }
+                    break;
+                case 4: {
+                    PopupController::instance()->putMessage("aa", 0, 50, 2);
+                    cout << "Current : " << PopupController::instance()->getState().toStdString()  << endl;
+//                    PopupController::instance()->putMessage("aa", 0, 50, 2);
+                }
+                    break;
+                default:
+                    break;
+
+                }
+
+            }
+        });
 
     return app.exec();
 }

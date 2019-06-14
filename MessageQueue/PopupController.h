@@ -5,6 +5,22 @@
 #include <QQuickView>
 
 #include "MessageThread.h"
+
+
+struct PopupItemItem {
+    QString popupType;
+    QString requestType;
+    QString data;
+
+};
+
+struct PopupTestItem {
+    QString objName;
+    int posX;
+    int posY;
+    int myCount;
+};
+
 class PopupController : public QQuickView
 {
     Q_OBJECT
@@ -56,6 +72,7 @@ public:
 
     void initMessageThread();
     void makeMessage();
+    void putMessage(const QString objectName, const qreal posX, const qreal posY, const int myCount);
     void startMessageThread();
     void resumeMessageThread();
     void stopMessageThread();
@@ -64,9 +81,8 @@ public:
     QString getState();
 
 
-
-private:
     MessageThread* m_msgThread;
+private:
     int mIndex = 0;
 
 };

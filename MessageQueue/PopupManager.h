@@ -12,6 +12,8 @@
 
 #include <QObject>
 
+#include <mutex>
+
 using ObjectName = QString;
 class PopupManager : public QQuickItem
 {
@@ -34,12 +36,14 @@ public:
     bool requestCreateComponent(const QString objectName, const qreal posX, const qreal posY);
 
     void updateQml();
+    void updateCount(int value);
 private:
     explicit PopupManager(QQuickItem *parent=Q_NULLPTR);
 
 signals:
     void signalCreateComponent(const QString objectName, const qreal posX, const qreal posY);
     void signalUpdateQml();
+    void signalUpdateCall(int value);
 
 public slots:
     void slotCreateComponent(const QString objectName, const qreal posX, const qreal posY);
@@ -74,6 +78,7 @@ public slots:
     void slotprogressChanged(qreal);
 
     void slotUpdateQml();
+    void slotUpdateCall(int value);
 
 
 protected:
@@ -84,6 +89,8 @@ private:
     QQmlEngine* mEngine;
     QQuickView* mView;
     QMap<ObjectName, QQuickItem*> mTest;
+
+    std::mutex m_thread_mutex;
 
 
 };

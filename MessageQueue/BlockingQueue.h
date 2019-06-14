@@ -6,6 +6,8 @@
 #include <queue>
 #include <condition_variable>
 
+#include <QQueue>
+
 
 template <class TYPE>
 class BlockingQueue {
@@ -22,14 +24,18 @@ public:
 
     void enqueue(TYPE *msg) {
         std::lock_guard<std::mutex> lock(m_mutex);
-        m_msgQueue.push(msg);
+        m_msgQueue.push_back(msg); // all data input( [Full/Middle] + [Mini] + [Utile] )
         m_cond.notify_one();
     }
 
     TYPE *dequeue() {
         std::lock_guard<std::mutex> lock(m_mutex);
-        TYPE *msg = m_msgQueue.front();
-        m_msgQueue.pop();
+//        TYPE *msg = m_msgQueue.front();
+//        m_msgQueue.pop();
+
+        //tuning
+        TYPE *msg = m_msgQueue.back();
+        m_msgQueue.clear();
         return msg;
     }
 
@@ -48,7 +54,8 @@ public:
     }
 
 private:
-    std::queue<TYPE *> m_msgQueue;
+//    std::queue<TYPE *> m_msgQueue;
+    QQueue<TYPE *> m_msgQueue;
     std::mutex m_mutex;
     std::condition_variable m_cond;
 };

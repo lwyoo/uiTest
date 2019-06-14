@@ -1,5 +1,5 @@
 #include "PopupManager.h"
-
+#include "PopupController.h"
 #define ACTIVITY
 //#define DCP
 static QSharedPointer<PopupManager> gMyQuickItemIstance;
@@ -244,6 +244,7 @@ void PopupManager::connectionSignal()
 
 
     connect(this, SIGNAL(signalUpdateQml()               ), SLOT( slotUpdateQml()                    ))   ;
+    connect(this, SIGNAL(signalUpdateCall(int)               ), SLOT( slotUpdateCall(int)                    ))   ;
 
 
 
@@ -258,6 +259,11 @@ bool PopupManager::requestCreateComponent(const QString objectName, const qreal 
 void PopupManager::updateQml()
 {
     emit signalUpdateQml();
+}
+
+void PopupManager::updateCount(int value)
+{
+    emit signalUpdateCall(value);
 }
 
 void PopupManager::slotCreateComponent(const QString objectName, const qreal posX, const qreal posY)
@@ -405,13 +411,25 @@ void PopupManager::slotUpdateQml()
             temp->setProperty("myQml", QUrl("MyRec1.qml"));
         }
     }
+
     qDebug() << Q_FUNC_INFO << "endl";
+}
 
+void PopupManager::slotUpdateCall(int value)
+{
+//    qDebug() << Q_FUNC_INFO ;
+    QQuickItem* temp = mTest["aa"];
 
+    if (temp->property("myCount").isValid())
+    {
+        temp->setProperty("myCount", value);
+
+    }
+//    qDebug() << Q_FUNC_INFO << "endl";3
 }
 
 bool PopupManager::event(QEvent *event)
 {
-    qDebug() << Q_FUNC_INFO << "Event Type ["<< static_cast<int>(event->type())  <<"]";
+//    qDebug() << Q_FUNC_INFO << "Event Type ["<< static_cast<int>(event->type())  <<"]";
     QObject::event(event);
 }
