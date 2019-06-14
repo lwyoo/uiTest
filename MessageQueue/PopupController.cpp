@@ -121,7 +121,7 @@ void PopupController::makeMessage()
     PopupItemItem* temp = new PopupItemItem;
 
     QString myStr = "this is sparta~~~~~~~~ ";
-    myStr.append(QString::number(mIndex));
+    myStr.append(QString::number(mIndex++));
     temp->popupType = "FULL";
     temp->requestType = "create";
     temp->data = myStr;

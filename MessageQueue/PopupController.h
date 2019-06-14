@@ -52,11 +52,10 @@ public slots:
     void testactiveFocusItemChanged()  ;
 
 
-    //Message Test
 public:
+
     void initMessageThread();
     void makeMessage();
-
     void startMessageThread();
     void resumeMessageThread();
     void stopMessageThread();
