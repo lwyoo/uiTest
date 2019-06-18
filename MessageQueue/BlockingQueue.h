@@ -7,7 +7,10 @@
 #include <condition_variable>
 
 #include <QQueue>
+#include <QDebug>
 
+#include <sstream>
+#include <iostream>
 
 template <class TYPE>
 class BlockingQueue {
@@ -30,22 +33,32 @@ public:
 
     TYPE *dequeue() {
         std::lock_guard<std::mutex> lock(m_mutex);
+        TYPE *msg = m_msgQueue.front();
+        m_msgQueue.pop_front();
 //        TYPE *msg = m_msgQueue.front();
 //        m_msgQueue.pop();
 
         //tuning
-        TYPE *msg = m_msgQueue.back();
-        m_msgQueue.clear();
+//        TYPE *msg = m_msgQueue.back();
+//        m_msgQueue.clear();
         return msg;
     }
 
     TYPE *obtain() {
+
         if (0 == m_msgQueue.size()) {
             std::unique_lock<std::mutex> uniqLock(m_mutex);
+//            qDebug() << Q_FUNC_INFO << "queue wait";
             m_cond.wait(uniqLock);
+//            qDebug() << Q_FUNC_INFO << "queue Wake!!!!!!";
         }
 
         TYPE *msg = dequeue();
+
+//        std::stringstream strS;
+//        strS << msg;
+//        qDebug() << Q_FUNC_INFO << "MessageQueue index address" << strS.str().c_str();
+
         return msg;
     }
 
@@ -58,6 +71,7 @@ private:
     QQueue<TYPE *> m_msgQueue;
     std::mutex m_mutex;
     std::condition_variable m_cond;
+    int checkCount = 0;
 };
 
 #endif // BLOCKINGQUEUE_H

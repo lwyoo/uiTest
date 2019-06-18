@@ -36,53 +36,23 @@ public:
     bool requestCreateComponent(const QString objectName, const qreal posX, const qreal posY);
 
     void updateQml();
-    void updateCount(int value);
+    void updateCount(const QString objectName, int value);
+
+    //test code
+    int dispatch(void* msg);
 private:
     explicit PopupManager(QQuickItem *parent=Q_NULLPTR);
 
 signals:
     void signalCreateComponent(const QString objectName, const qreal posX, const qreal posY);
     void signalUpdateQml();
-    void signalUpdateCall(int value);
+    void signalUpdateCall(QString objectName, int value);
 
 public slots:
     void slotCreateComponent(const QString objectName, const qreal posX, const qreal posY);
 
-    //QQuickItem siganl
-    void slotstateChanged(const QString &);
-    void slotfocusChanged(bool);
-    void slotactiveFocusChanged(bool);
-    void slotactiveFocusOnTabChanged(bool);
-    void slottransformOriginChanged(TransformOrigin);
-    void slotsmoothChanged(bool);
-    void slotantialiasingChanged(bool);
-    void slotclipChanged(bool);
-    void slotchildrenChanged();
-    void slotopacityChanged();
-    void slotenabledChanged();
-    void slotvisibleChanged();
-    void slotvisibleChildrenChanged();
-    void slotrotationChanged();
-    void slotscaleChanged();
-    void slotxChanged();
-    void slotyChanged();
-    void slotwidthChanged();
-    void slotheightChanged();
-    void slotzChanged();
-    void slotimplicitWidthChanged();
-    void slotimplicitHeightChanged();
-    void slotcontainmentMaskChanged();
 
-//    QQmlComponent signal
-    void slotstatusChanged(QQmlComponent::Status);
-    void slotprogressChanged(qreal);
-
-    void slotUpdateQml();
-    void slotUpdateCall(int value);
-
-
-protected:
-    bool event(QEvent *event);
+    void slotUpdateCall(QString objectName, int value);
 
 private:
     QQuickItem* mItem;

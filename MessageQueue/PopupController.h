@@ -33,11 +33,9 @@ public:
     void createComponent(const QString objectName, const qreal posX, const qreal posY);
     void requestCreateComponent(const QString objectName, const qreal posX, const qreal posY);
 
-
-    void updateQml();
-
-
     ~PopupController();
+
+    void check();
 
 
 
@@ -57,21 +55,10 @@ private:
 
 public slots:
     void testSlot(QString ob, qreal posX, qreal posY);
-    void testSceneGraphInitialized();
-    void testsceneGraphInvalidated ()  ;
-    void testbeforeSynchronizing   ()  ;
-    void testafterSynchronizing    ()  ;
-    void testbeforeRendering       ()  ;
-    void testafterRendering        ()  ;
-    void testafterAnimating        ()  ;
-    void testsceneGraphAboutToStop ()  ;
-    void testactiveFocusItemChanged()  ;
-
 
 public:
 
     void initMessageThread();
-    void makeMessage();
     void putMessage(const QString objectName, const qreal posX, const qreal posY, const int myCount);
     void startMessageThread();
     void resumeMessageThread();
@@ -80,10 +67,11 @@ public:
     int dispatch(void* msg);
     QString getState();
 
-
     MessageThread* m_msgThread;
 private:
     int mIndex = 0;
+    int checkCount = 0;
+    int checkInput = 0;
 
 };
 

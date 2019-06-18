@@ -1,5 +1,7 @@
 #include <MessageThread.h>
 #include <QDebug>
+#include <sstream>
+#include <iostream>
 
 
 MessageThread::MessageThread(std::function<int(void *)> handler, std::string name) {
@@ -30,10 +32,12 @@ void MessageThread::setState(const MessageThreadState state) {
     case MessageThreadState::MAX       : temp = "MAX        " ;break;
 
     }
-    //    qDebug() << Q_FUNC_INFO << "state : " << temp;
+//        qDebug() << Q_FUNC_INFO << "queue size : " << m_queue.getSize();
 }
 
-MessageThreadState MessageThread::getState() const {
+MessageThreadState MessageThread::getState() {
+        //qDebug() << Q_FUNC_INFO << "state : " << temp;
+    std::lock_guard<std::mutex> lock(m_thread_mutex);
     return m_state;
 }
 
@@ -94,33 +98,55 @@ MessageThreadReturn MessageThread::exit() {
 }
 
 void MessageThread::putMessage(void *msg) {
+//    std::stringstream strS;
+//    strS << msg;
+
+//    qDebug() << Q_FUNC_INFO << "MessageThread address" << strS.str().c_str();
     m_queue.enqueue(msg);
+}
+
+void *MessageThread::getMsg()
+{
+    std::lock_guard<std::mutex> lock(m_thread_mutex);
+    return testMsg;
+}
+
+void MessageThread::setMsg(void *msg)
+{
+    std::lock_guard<std::mutex> lock(m_thread_mutex);
+    testMsg = msg;
 }
 
 
 int MessageThread::run() {
 
-    void *msg = nullptr;
+    void* msg = nullptr;
     int res = 0;
 
     //    m_state = MessageThreadState::RUNNING;
     setState(MessageThreadState::RUNNING);
 
     while (MessageThreadState::TERMINATED != m_state) {
-        msg = m_queue.obtain();
 
         if (MessageThreadState::RUNNING != m_state) {
             std::unique_lock<std::mutex> lock(m_thread_mutex);
+//            qDebug() << Q_FUNC_INFO << "thread wait";
             m_thread_cond.wait(lock);
+//            qDebug() << Q_FUNC_INFO << "thread Wake!!!!!!!!!!!!!!1";
             setState(MessageThreadState::RUNNING);
             lock.unlock();
+
         }
 
+        msg = m_queue.obtain();
+        setMsg(msg);
         if (nullptr == msg) {
             // critical ERROR log
+            //qDebug() << "nullptr == msg @@@@@@@@@@@@2";
             continue;
         }
 
+//        setMsg(msg);
         res = m_handler(msg);
         if (0 != res) {
             // ERROR log

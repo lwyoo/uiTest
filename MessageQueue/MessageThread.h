@@ -29,7 +29,7 @@ public:
     virtual ~MessageThread();
 
     void setState(const MessageThreadState state);
-    MessageThreadState getState() const;
+    MessageThreadState getState() ;
 
     MessageThreadReturn start();
     MessageThreadReturn resume();
@@ -37,6 +37,9 @@ public:
     MessageThreadReturn exit();
 
     void putMessage(void *msg);
+
+    void* getMsg();
+    void setMsg(void *msg);
 
 protected:
     int run();
@@ -51,6 +54,8 @@ private:
 
     BlockingQueue<void> m_queue;
     std::function<int(void *)> m_handler;
+
+    void *testMsg = nullptr;
 };
 
 #endif // MESSAGETHREAD_H
