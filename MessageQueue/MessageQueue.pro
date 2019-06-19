@@ -39,4 +39,5 @@ HEADERS += \
     BlockingQueue.h \
     MessageThread.h \
     PopupController.h \
-    PopupManager.h
+    PopupManager.h \
+    popuptypes.h

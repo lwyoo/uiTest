@@ -102,18 +102,23 @@ void MessageThread::putMessage(void *msg) {
 //    strS << msg;
 
 //    qDebug() << Q_FUNC_INFO << "MessageThread address" << strS.str().c_str();
+
+
+
+
+    
     m_queue.enqueue(msg);
 }
 
 void *MessageThread::getMsg()
 {
-    std::lock_guard<std::mutex> lock(m_thread_mutex);
+//    std::lock_guard<std::mutex> lock(m_thread_mutex);
     return testMsg;
 }
 
 void MessageThread::setMsg(void *msg)
 {
-    std::lock_guard<std::mutex> lock(m_thread_mutex);
+//    std::lock_guard<std::mutex> lock(m_thread_mutex);
     testMsg = msg;
 }
 
@@ -130,9 +135,7 @@ int MessageThread::run() {
 
         if (MessageThreadState::RUNNING != m_state) {
             std::unique_lock<std::mutex> lock(m_thread_mutex);
-//            qDebug() << Q_FUNC_INFO << "thread wait";
             m_thread_cond.wait(lock);
-//            qDebug() << Q_FUNC_INFO << "thread Wake!!!!!!!!!!!!!!1";
             setState(MessageThreadState::RUNNING);
             lock.unlock();
 

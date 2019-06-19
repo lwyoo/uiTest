@@ -1,0 +1,40 @@
+@startuml
+main -> popupController : popupController::putMessage(void*)
+popupController -> MessageThread : MessageThread::putMessage(void*)
+MessageThread -> BlockingQueue : BlockingQueue::enqueue(void*)
+...
+MessageThread -> MessageThread : Thread::run()
+
+alt START
+MessageThread -> MessageThread : Thread 생성 ~
+end
+alt TERMINATED
+  MessageThread -> MessageThread : Thread 종료
+end
+alt INITED
+  MessageThread -> MessageThread : wait
+end
+alt STOPPED
+  MessageThread -> MessageThread : wait
+end
+alt RUN
+  MessageThread -> MessageThread : Thread running
+  MessageThread -> BlockingQueue : obtain
+
+  alt queue empty
+  BlockingQueue -> BlockingQueue : queue wait, queue에 대에티가 들어올때지 정지
+  end
+  ...
+  MessageThread -> MessageThread : Thread running
+  MessageThread -> BlockingQueue : obtain 
+  alt queue Exist
+  BlockingQueue -> BlockingQueue : dequeue()
+  end
+  BlockingQueue --> MessageThread : return void*
+end
+alt RESUME
+  MessageThread -> MessageThread : thread 정지 또는 시작 ......
+end
+
+
+@enduml

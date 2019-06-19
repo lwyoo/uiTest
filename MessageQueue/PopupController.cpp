@@ -170,9 +170,11 @@ void PopupController::putMessage(const QString objectName, const qreal posX, con
     temp->posX = posX;
     temp->posY = posY;
     temp->myCount = myCount;
+    temp->popupType = myCount%5;
 
     m_msgThread->putMessage(temp);
     checkInput =checkInput + 1;
+
 
 //    std::stringstream strS;
 //    strS << temp;

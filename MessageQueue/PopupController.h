@@ -6,20 +6,7 @@
 
 #include "MessageThread.h"
 
-
-struct PopupItemItem {
-    QString popupType;
-    QString requestType;
-    QString data;
-
-};
-
-struct PopupTestItem {
-    QString objName;
-    int posX;
-    int posY;
-    int myCount;
-};
+#include "popuptypes.h"
 
 class PopupController : public QQuickView
 {

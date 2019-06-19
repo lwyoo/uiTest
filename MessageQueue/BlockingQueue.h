@@ -12,6 +12,8 @@
 #include <sstream>
 #include <iostream>
 
+#include "popuptypes.h"
+
 template <class TYPE>
 class BlockingQueue {
 public:
@@ -28,36 +30,45 @@ public:
     void enqueue(TYPE *msg) {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_msgQueue.push_back(msg); // all data input( [Full/Middle] + [Mini] + [Utile] )
+
+
         m_cond.notify_one();
     }
 
     TYPE *dequeue() {
+        // thread work ...
         std::lock_guard<std::mutex> lock(m_mutex);
+        //        TYPE *msg = m_msgQueue.front();
+        //        m_msgQueue.pop();
+
         TYPE *msg = m_msgQueue.front();
         m_msgQueue.pop_front();
-//        TYPE *msg = m_msgQueue.front();
-//        m_msgQueue.pop();
-
-        //tuning
-//        TYPE *msg = m_msgQueue.back();
-//        m_msgQueue.clear();
         return msg;
     }
+    //    TYPE *dequeue() {
+    //        // thread work ...
+    //        std::lock_guard<std::mutex> lock(m_mutex);
+    //        //tuning
+    ////        큐에 있는 정보를 확인
+    ////        필여한 정보만 선별하기
+
+    //        TYPE *msg = m_msgQueue.back();
+    //        m_msgQueue.clear();
+    //        return msg;
+    //    }
 
     TYPE *obtain() {
 
         if (0 == m_msgQueue.size()) {
             std::unique_lock<std::mutex> uniqLock(m_mutex);
-//            qDebug() << Q_FUNC_INFO << "queue wait";
             m_cond.wait(uniqLock);
-//            qDebug() << Q_FUNC_INFO << "queue Wake!!!!!!";
         }
 
         TYPE *msg = dequeue();
 
-//        std::stringstream strS;
-//        strS << msg;
-//        qDebug() << Q_FUNC_INFO << "MessageQueue index address" << strS.str().c_str();
+        //        std::stringstream strS;
+        //        strS << msg;
+        //        qDebug() << Q_FUNC_INFO << "MessageQueue index address" << strS.str().c_str();
 
         return msg;
     }
@@ -67,7 +78,7 @@ public:
     }
 
 private:
-//    std::queue<TYPE *> m_msgQueue;
+    //    std::queue<TYPE *> m_msgQueue;
     QQueue<TYPE *> m_msgQueue;
     std::mutex m_mutex;
     std::condition_variable m_cond;
