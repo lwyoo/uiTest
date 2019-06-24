@@ -8,7 +8,6 @@ MessageThread::MessageThread(std::function<int(void *)> handler, std::string nam
     m_name    = name;
     m_handler = handler;
     setState(MessageThreadState::UNINITED);
-    //    m_state   = MessageThreadState::UNINITED;
 }
 
 MessageThread::~MessageThread() {
@@ -32,11 +31,9 @@ void MessageThread::setState(const MessageThreadState state) {
     case MessageThreadState::MAX       : temp = "MAX        " ;break;
 
     }
-//        qDebug() << Q_FUNC_INFO << "queue size : " << m_queue.getSize();
 }
 
 MessageThreadState MessageThread::getState() {
-        //qDebug() << Q_FUNC_INFO << "state : " << temp;
     std::lock_guard<std::mutex> lock(m_thread_mutex);
     return m_state;
 }
@@ -47,7 +44,6 @@ MessageThreadReturn MessageThread::start() {
     if (MessageThreadState::UNINITED == m_state) {
         m_thread  = std::thread([=]{run();});
         setState(MessageThreadState::STARTED);
-        //        m_state = MessageThreadState::STARTED;
         ret = MessageThreadReturn::SUCCESS;
     }
 
@@ -59,13 +55,9 @@ MessageThreadReturn MessageThread::resume() {
     std::lock_guard<std::mutex> lock(m_thread_mutex);
     if (MessageThreadState::RUNNING != m_state) {
         setState(MessageThreadState::RUNNING);
-        //        m_state = MessageThreadState::RUNNING;
         m_thread_cond.notify_one();
         ret = MessageThreadReturn::SUCCESS;
     } else {
-        //        m_state = MessageThreadState::SUSPEND;
-        ////        m_thread_cond.notify_one();
-        //        ret = MessageThreadReturn::SUCCESS;
     }
 
     return ret;
@@ -76,7 +68,6 @@ MessageThreadReturn MessageThread::stop() {
     std::lock_guard<std::mutex> lock(m_thread_mutex);
     if (MessageThreadState::STOPPED != m_state) {
         setState(MessageThreadState::STOPPED);
-        //        m_state = MessageThreadState::STOPPED;
         ret = MessageThreadReturn::SUCCESS;
     }
 
@@ -89,7 +80,6 @@ MessageThreadReturn MessageThread::exit() {
     std::lock_guard<std::mutex> lock(m_thread_mutex);
     if (MessageThreadState::TERMINATED != m_state) {
         setState(MessageThreadState::TERMINATED);
-        //        m_state = MessageThreadState::TERMINATED;
         ret = MessageThreadReturn::SUCCESS;
         m_thread_cond.notify_one();
     }
@@ -98,27 +88,16 @@ MessageThreadReturn MessageThread::exit() {
 }
 
 void MessageThread::putMessage(void *msg) {
-//    std::stringstream strS;
-//    strS << msg;
-
-//    qDebug() << Q_FUNC_INFO << "MessageThread address" << strS.str().c_str();
-
-
-
-
-    
     m_queue.enqueue(msg);
 }
 
 void *MessageThread::getMsg()
 {
-//    std::lock_guard<std::mutex> lock(m_thread_mutex);
     return testMsg;
 }
 
 void MessageThread::setMsg(void *msg)
 {
-//    std::lock_guard<std::mutex> lock(m_thread_mutex);
     testMsg = msg;
 }
 
@@ -128,7 +107,6 @@ int MessageThread::run() {
     void* msg = nullptr;
     int res = 0;
 
-    //    m_state = MessageThreadState::RUNNING;
     setState(MessageThreadState::RUNNING);
 
     while (MessageThreadState::TERMINATED != m_state) {
@@ -145,11 +123,9 @@ int MessageThread::run() {
         setMsg(msg);
         if (nullptr == msg) {
             // critical ERROR log
-            //qDebug() << "nullptr == msg @@@@@@@@@@@@2";
             continue;
         }
 
-//        setMsg(msg);
         res = m_handler(msg);
         if (0 != res) {
             // ERROR log

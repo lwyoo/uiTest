@@ -36,26 +36,11 @@ public:
     }
 
     TYPE *dequeue() {
-        // thread work ...
         std::lock_guard<std::mutex> lock(m_mutex);
-        //        TYPE *msg = m_msgQueue.front();
-        //        m_msgQueue.pop();
-
         TYPE *msg = m_msgQueue.front();
         m_msgQueue.pop_front();
         return msg;
     }
-    //    TYPE *dequeue() {
-    //        // thread work ...
-    //        std::lock_guard<std::mutex> lock(m_mutex);
-    //        //tuning
-    ////        큐에 있는 정보를 확인
-    ////        필여한 정보만 선별하기
-
-    //        TYPE *msg = m_msgQueue.back();
-    //        m_msgQueue.clear();
-    //        return msg;
-    //    }
 
     TYPE *obtain() {
 
@@ -65,11 +50,6 @@ public:
         }
 
         TYPE *msg = dequeue();
-
-        //        std::stringstream strS;
-        //        strS << msg;
-        //        qDebug() << Q_FUNC_INFO << "MessageQueue index address" << strS.str().c_str();
-
         return msg;
     }
 

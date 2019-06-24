@@ -17,6 +17,7 @@ struct PopupItem {
 
 };
 
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -65,8 +66,9 @@ int main(int argc, char *argv[])
             }
                 break;
             case 2: {
-                for(int i = 0 ; i < 10; i++) {
-                    PopupController::instance()->putMessage("ccc", 0, 50, i);
+                for(int i = 0 ; i < 1000000; i++) {
+//                    PopupController::instance()->putMessage("ccc", 0, 50, i);
+                    PopupManager::instance()->updateCount("ccc", i);
                 }
 
             }
