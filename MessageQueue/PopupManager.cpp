@@ -239,7 +239,7 @@ int PopupManager::dispatch(void *msg)
 {
     PopupTestItem* temp = (PopupTestItem*)msg;
 
-    PopupController::instance()->m_msgThread->stop();
+    PopupController::instance()->m_msgThread->resume();
 
     PopupController::instance()->createComponent("dd", 0, 50);
 
@@ -247,9 +247,9 @@ int PopupManager::dispatch(void *msg)
 
 void PopupManager::slotCreateComponent(const QString objectName, const qreal posX, const qreal posY)
 {
-    //qDebug() << Q_FUNC_INFO <<"objectName : " << objectName << " posX : " << posX << " posY : " << posY ;
+    qDebug() << Q_FUNC_INFO <<"objectName : " << objectName << " posX : " << posX << " posY : " << posY ;
 
-    createComponent(objectName, posX, posY );
+//    createComponent(objectName, posX, posY );
 }
 
 void PopupManager::slotUpdateCall(QString objectName, int value)
@@ -270,8 +270,10 @@ void PopupManager::slotUpdateCall(QString objectName, int value)
 
 //    std::stringstream strS;
 //    strS << PopupController::instance()->m_msgThread->getMsg();
-//    qDebug() << Q_FUNC_INFO << "address" << strS.str().c_str();
 
-    delete  PopupController::instance()->m_msgThread->getMsg();
-    PopupController::instance()->m_msgThread->resume();
+
+//    delete  PopupController::instance()->m_msgThread->getMsg();
+//    PopupController::instance()->m_msgThread->resume();
+
+    PopupController::instance()->responeGUIUpdateComplete();
 }

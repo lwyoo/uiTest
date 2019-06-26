@@ -17,6 +17,7 @@ SOURCES += \
     MessageThread.cpp \
     PopupController.cpp \
     PopupManager.cpp \
+    TestImsg.cpp \
         main.cpp
 
 #RESOURCES += qml.qrc
@@ -40,4 +41,5 @@ HEADERS += \
     MessageThread.h \
     PopupController.h \
     PopupManager.h \
+    TestImsg.h \
     popuptypes.h

@@ -1,136 +1,140 @@
 #include <MessageThread.h>
-#include <QDebug>
-#include <sstream>
-#include <iostream>
 
 
-MessageThread::MessageThread(std::function<int(void *)> handler, std::string name) {
-    m_name    = name;
-    m_handler = handler;
-    setState(MessageThreadState::UNINITED);
+//static const char * const DLT_TAG = "MessageThread";
+
+
+MessageThread::MessageThread(std::function<int(IMsg *)> dispatcher, std::string name)
+  : m_name(name)
+  , m_state(ThreadState::UNINITED)
+  , m_dispatcher(dispatcher)
+  //, m_thread
+  //, m_thread_mutex
+  //, m_thread_cond
+  , m_queue()
+{
 }
 
-MessageThread::~MessageThread() {
-    exit();
-    m_thread.join();
-}
-
-void MessageThread::setState(const MessageThreadState state) {
-
-    m_state = state;
-
-    QString temp;
-    switch (m_state) {
-    case MessageThreadState::UNINITED  : temp = "UNINITED,  " ;break;
-    case MessageThreadState::INITED    : temp = "INITED,    " ;break;
-    case MessageThreadState::STARTED   : temp = "STARTED,   " ;break;
-    case MessageThreadState::RUNNING   : temp = "RUNNING,   " ;break;
-    case MessageThreadState::STOPPED   : temp = "STOPPED,   " ;break;
-    case MessageThreadState::SUSPEND   : temp = "SUSPEND,   " ;break;
-    case MessageThreadState::TERMINATED: temp = "TERMINATED," ;break;
-    case MessageThreadState::MAX       : temp = "MAX        " ;break;
-
+MessageThread::~MessageThread()
+{
+    if (m_thread.joinable())
+    {
+        exit();
+        m_thread.join();
     }
 }
 
-MessageThreadState MessageThread::getState() {
-    std::lock_guard<std::mutex> lock(m_thread_mutex);
+MessageThread::ThreadState MessageThread::getState() const
+{
     return m_state;
 }
 
-MessageThreadReturn MessageThread::start() {
-    MessageThreadReturn ret = MessageThreadReturn::ALREADY;
+MessageThread::ThreadReturn MessageThread::start()
+{
+    ThreadReturn ret = ThreadReturn::ALREADY;
+
     std::lock_guard<std::mutex> lock(m_thread_mutex);
-    if (MessageThreadState::UNINITED == m_state) {
-        m_thread  = std::thread([=]{run();});
-        setState(MessageThreadState::STARTED);
-        ret = MessageThreadReturn::SUCCESS;
+
+    if (ThreadState::UNINITED == m_state)
+    {
+        m_state = ThreadState::STARTED;
+        m_thread = std::thread([=]{run();});
+        ret = ThreadReturn::SUCCESS;
+    }
+    else if (ThreadState::TERMINATED == m_state)
+    {
+        ret = ThreadReturn::NOT_AVAILABLE;
     }
 
     return ret;
 }
 
-MessageThreadReturn MessageThread::resume() {
-    MessageThreadReturn ret = MessageThreadReturn::ALREADY;
-    std::lock_guard<std::mutex> lock(m_thread_mutex);
-    if (MessageThreadState::RUNNING != m_state) {
-        setState(MessageThreadState::RUNNING);
-        m_thread_cond.notify_one();
-        ret = MessageThreadReturn::SUCCESS;
-    } else {
+MessageThread::ThreadReturn MessageThread::suspend()
+{
+    ThreadReturn ret = ThreadReturn::NOT_AVAILABLE;
+
+    if (ThreadState::TERMINATED != m_state)
+    {
+        m_queue.setSuspendMode(true);
+        ret = ThreadReturn::SUCCESS;
     }
 
     return ret;
 }
 
-MessageThreadReturn MessageThread::stop() {
-    MessageThreadReturn ret = MessageThreadReturn::ALREADY;
-    std::lock_guard<std::mutex> lock(m_thread_mutex);
-    if (MessageThreadState::STOPPED != m_state) {
-        setState(MessageThreadState::STOPPED);
-        ret = MessageThreadReturn::SUCCESS;
+MessageThread::ThreadReturn MessageThread::resume()
+{
+    ThreadReturn ret = ThreadReturn::NOT_AVAILABLE;
+
+    if (ThreadState::TERMINATED != m_state)
+    {
+        m_queue.setSuspendMode(false);
+        ret = ThreadReturn::SUCCESS;
     }
 
     return ret;
 }
 
-MessageThreadReturn MessageThread::exit() {
-    MessageThreadReturn ret = MessageThreadReturn::ALREADY;
-    m_queue.wake_up();
-    std::lock_guard<std::mutex> lock(m_thread_mutex);
-    if (MessageThreadState::TERMINATED != m_state) {
-        setState(MessageThreadState::TERMINATED);
-        ret = MessageThreadReturn::SUCCESS;
-        m_thread_cond.notify_one();
+MessageThread::ThreadReturn MessageThread::exit()
+{
+    ThreadReturn ret = ThreadReturn::ALREADY;
+
+    if (ThreadState::TERMINATED != m_state)
+    {
+        m_state = ThreadState::TERMINATED;
+        m_queue.setBypass(true);
+
+        ret = ThreadReturn::SUCCESS;
     }
 
     return ret;
 }
 
-void MessageThread::putMessage(void *msg) {
+void MessageThread::postMessage(IMsg *msg)
+{
     m_queue.enqueue(msg);
+}
+
+void MessageThread::setMsg(void *value)
+{
+    m_msg = value;
 }
 
 void *MessageThread::getMsg()
 {
-    return testMsg;
+    return m_msg;
 }
 
-void MessageThread::setMsg(void *msg)
+int MessageThread::run()
 {
-    testMsg = msg;
-}
 
-
-int MessageThread::run() {
-
-    void* msg = nullptr;
     int res = 0;
 
-    setState(MessageThreadState::RUNNING);
+    m_state = ThreadState::RUNNING;
 
-    while (MessageThreadState::TERMINATED != m_state) {
-
-        if (MessageThreadState::RUNNING != m_state) {
-            std::unique_lock<std::mutex> lock(m_thread_mutex);
-            m_thread_cond.wait(lock);
-            setState(MessageThreadState::RUNNING);
-            lock.unlock();
-
+    void *msg = m_queue.dequeue();
+    while (m_state != ThreadState::TERMINATED)
+    {
+        if (nullptr != msg)
+        {
+            // (note) do m_queue.setSuspend(true) here or
+            // let m_handler(msg) do it on her decision
+            res = m_dispatcher((IMsg*)msg);
+            if (0 != res)
+            {
+                // log : ERROR
+            }
         }
-
-        msg = m_queue.obtain();
+        msg = m_queue.dequeue();
         setMsg(msg);
-        if (nullptr == msg) {
-            // critical ERROR log
-            continue;
-        }
-
-        res = m_handler(msg);
-        if (0 != res) {
-            // ERROR log
-        }
     }
+    // note: msg could have not-handled message
+
+    // TODO : clear m_queue
+    //while (nullptr != msg)
+    //{
+    //    msg = m_queue.dequeue(); // m_queue should be in bypass mode
+    //}
 
     return res;
 }

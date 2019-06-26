@@ -9,6 +9,8 @@
 #include <sstream>
 #include <iostream>
 
+#include "TestImsg.h"
+
 #define SCREEN_INFO_X 0
 #define SCREEN_INFO_Y 0
 #define SCREEN_INFO_WIDTH 1920
@@ -61,17 +63,15 @@ void PopupController::requestCreateComponent(const QString objectName, const qre
 
 QString PopupController::getState()
 {
-    MessageThreadState value = m_msgThread->getState();
+    MessageThread::ThreadState value = m_msgThread->getState();
     QString temp;
     switch (value) {
-    case MessageThreadState::UNINITED  : temp = "UNINITED,  " ;break;
-    case MessageThreadState::INITED    : temp = "INITED,    " ;break;
-    case MessageThreadState::STARTED   : temp = "STARTED,   " ;break;
-    case MessageThreadState::RUNNING   : temp = "RUNNING,   " ;break;
-    case MessageThreadState::STOPPED   : temp = "STOPPED,   " ;break;
-    case MessageThreadState::SUSPEND   : temp = "SUSPEND,   " ;break;
-    case MessageThreadState::TERMINATED: temp = "TERMINATED," ;break;
-    case MessageThreadState::MAX       : temp = "MAX        " ;break;
+    case MessageThread::ThreadState::UNINITED  : temp = "UNINITED,  " ;break;
+    case MessageThread::ThreadState::INITED    : temp = "INITED,    " ;break;
+    case MessageThread::ThreadState::STARTED   : temp = "STARTED,   " ;break;
+    case MessageThread::ThreadState::RUNNING   : temp = "RUNNING,   " ;break;
+    case MessageThread::ThreadState::TERMINATED: temp = "TERMINATED," ;break;
+    case MessageThread::ThreadState::MAX       : temp = "MAX        " ;break;
 
     }
     return temp;
@@ -80,6 +80,7 @@ QString PopupController::getState()
 void PopupController::initMessageThread()
 {
     //qDebug() << Q_FUNC_INFO;
+
 
     std::function<int(void *)> handler = [this](void *msg)->int {
         return this->dispatch(msg);
@@ -104,7 +105,7 @@ void PopupController::resumeMessageThread()
 void PopupController::stopMessageThread()
 {
     //qDebug() << Q_FUNC_INFO;
-    m_msgThread->stop();
+//    m_msgThread->stop();
 }
 
 PopupController::~PopupController()
@@ -123,9 +124,23 @@ void PopupController::check()
 
 }
 
-PopupController::PopupController(QQuickView *parent)
-    :QQuickView(parent)
+void PopupController::responeGUIUpdateComplete()
 {
+    std::lock_guard<std::mutex> lock(mMutex);
+
+    TestImsg* temp = (TestImsg*)m_msgThread->getMsg();
+
+    if (nullptr != temp ) {
+        delete temp;
+    } else {
+
+    }
+
+    m_msgThread->resume();
+}
+
+PopupController::PopupController(QQuickView *parent)
+    :QQuickView(parent) {
     this->setColor(QColor(Qt::darkGray));
     this->setResizeMode(QQuickView::SizeViewToRootObject);
     this->setGeometry(QRect(SCREEN_INFO_X, SCREEN_INFO_Y, SCREEN_INFO_WIDTH, SCREEN_INFO_HEIGHT));
@@ -144,41 +159,36 @@ void PopupController::testSlot(QString ob, qreal posX, qreal posY)
 
 int PopupController::dispatch(void *msg)
 {
-    PopupTestItem* temp = (PopupTestItem*)msg;
+    qDebug() << Q_FUNC_INFO << 0 ;
+    TestImsg* temp = (TestImsg*)msg;
+    qDebug() << Q_FUNC_INFO<< 1 ;
 
 
 
-    PopupController::instance()->m_msgThread->stop();
+    PopupController::instance()->m_msgThread->suspend();
+    qDebug() << Q_FUNC_INFO<< 2 ;
 
-    PopupManager::instance()->updateCount(temp->objName, temp->myCount);
-//    PopupManager::instance()->slotUpdateCall(temp->objName, temp->myCount);
+    PopupManager::instance()->updateCount(temp->getObjName(), temp->getMyCount());
+    qDebug() << Q_FUNC_INFO<< 3 ;
 
     checkCount = checkCount + 1;
 
-//    std::stringstream strS;
-//    strS << temp;
-//    qDebug() << Q_FUNC_INFO << " index [" << temp->myCount << "] address" << strS.str().c_str();
 }
 
 void PopupController::putMessage(const QString objectName, const qreal posX, const qreal posY, const int myCount)
 {
-//    qDebug() << Q_FUNC_INFO;
+    qDebug() << Q_FUNC_INFO;
 
-    PopupTestItem* temp = new PopupTestItem;
+    qDebug() << Q_FUNC_INFO << "0";
+    TestImsg* temp = new TestImsg(objectName, posX, posY, myCount, (myCount%5));
 
-    temp->objName = objectName;
-    temp->posX = posX;
-    temp->posY = posY;
-    temp->myCount = myCount;
-    temp->popupType = myCount%5;
 
-    m_msgThread->putMessage(temp);
+    qDebug() << Q_FUNC_INFO << "1";
+    m_msgThread->postMessage(temp);
+    qDebug() << Q_FUNC_INFO << "2";
+
     checkInput =checkInput + 1;
 
-
-//    std::stringstream strS;
-//    strS << temp;
-//    qDebug() << Q_FUNC_INFO << " index [" << myCount << "] address" << strS.str().c_str();
 
 
 }

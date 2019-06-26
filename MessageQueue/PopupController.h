@@ -8,6 +8,7 @@
 
 #include "popuptypes.h"
 
+#include <mutex>
 class PopupController : public QQuickView
 {
     Q_OBJECT
@@ -24,6 +25,9 @@ public:
 
     void check();
 
+    void responeGUIUpdateComplete();
+
+    void test(std::vector<std::string>& popupData );
 
 
 
@@ -59,6 +63,7 @@ private:
     int mIndex = 0;
     int checkCount = 0;
     int checkInput = 0;
+    std::mutex mMutex;
 
 };
 

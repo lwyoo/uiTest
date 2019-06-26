@@ -8,7 +8,8 @@
 #include <thread>
 
 #include <functional>
-
+#include <vector>
+#include <string>
 #define MESSAGE_TEST 0
 using namespace std;
 
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
             case 1: {
 
                 for(int i = 0 ; i < 1000000; i++) {
-                    PopupController::instance()->putMessage("aa", 0, 50, i);
+                    PopupController::instance()->requestCreateComponent("aa", 0, 50);
                 }
 
 
@@ -74,8 +75,9 @@ int main(int argc, char *argv[])
             }
                 break;
             case 3: {
-
-                PopupController::instance()->putMessage("aa", 0, 50, 0);
+                for(int i = 0 ; i < 1000000; i++) {
+                    qDebug() << "test";
+                }
 
             }
                 break;

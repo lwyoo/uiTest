@@ -1,61 +1,68 @@
-#ifndef MESSAGETHREAD_H
-#define MESSAGETHREAD_H
+#ifndef __MESSAGE_THREAD_H__
+#define __MESSAGE_THREAD_H__
+
 
 #include <BlockingQueue.h>
 #include <thread>
 
 
-enum class MessageThreadReturn {
-    SUCCESS,
-    ALREADY,
-    MAX
-};
-
-enum class MessageThreadState {
-    UNINITED,
-    INITED,
-    STARTED,
-    RUNNING,
-    STOPPED,
-    SUSPEND,
-    TERMINATED,
-    MAX
-};
-
-
-class MessageThread {
+class MessageThread
+{
 public:
-    MessageThread(std::function<int(void *)> handler, std::string name = "");
+  enum class ThreadReturn {
+      SUCCESS,
+      ALREADY,
+      NOT_AVAILABLE,
+      MAX
+  };
+
+  enum class ThreadState {
+      UNINITED,
+      INITED,
+      STARTED,
+      RUNNING,
+      TERMINATED,
+      MAX
+  };
+
+  class IMsg
+  {
+  public:
+    IMsg() {}
+    virtual ~IMsg() {}
+  };
+
+public:
+    MessageThread(std::function<int(IMsg*)> dispatcher, std::string name = "");
     virtual ~MessageThread();
 
-    void setState(const MessageThreadState state);
-    MessageThreadState getState() ;
+    ThreadState getState() const;
 
-    MessageThreadReturn start();
-    MessageThreadReturn resume();
-    MessageThreadReturn stop();
-    MessageThreadReturn exit();
+    ThreadReturn start();
+    ThreadReturn suspend();
+    ThreadReturn resume();
+    ThreadReturn exit();
 
-    void putMessage(void *msg);
+    void postMessage(IMsg *msg);
 
+    void setMsg(void * value);
     void* getMsg();
-    void setMsg(void *msg);
 
 protected:
     int run();
 
 private:
     std::string m_name;
-    MessageThreadState m_state;
-    std::thread m_thread;
+    std::function<int(IMsg *)> m_dispatcher;
+    ThreadState m_state;
 
+    std::thread m_thread;
     std::mutex m_thread_mutex;
     std::condition_variable m_thread_cond;
-
     BlockingQueue<void> m_queue;
-    std::function<int(void *)> m_handler;
 
-    void *testMsg = nullptr;
+    void* m_msg;
 };
 
-#endif // MESSAGETHREAD_H
+
+#endif // __MESSAGE_THREAD_H__
